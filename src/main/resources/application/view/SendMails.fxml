@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.view.SendMailsController">
+   <center>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="55.0" minHeight="55.0" prefHeight="55.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="55.0" minHeight="55.0" prefHeight="55.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="668.0" minHeight="10.0" prefHeight="511.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="70.0" minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="1">
+               <children>
+                  <Label maxWidth="210.0" minWidth="190.0" prefHeight="55.0" prefWidth="190.0" text="En cours d'envoi vers :" textFill="#01ae72">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="labCurrent" layoutX="20.0" layoutY="10.0" maxWidth="300.0" minWidth="300.0" prefHeight="55.0" prefWidth="300.0">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label layoutX="20.0" layoutY="20.0" maxWidth="200.0" minWidth="178.0" prefHeight="55.0" prefWidth="178.0" text="Prochain envoi vers :" textFill="BLUE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="labNext" layoutX="235.0" layoutY="10.0" maxWidth="300.0" minWidth="300.0" prefHeight="55.0" prefWidth="300.0">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label layoutX="505.0" layoutY="10.0" maxWidth="131.0" minWidth="88.0" prefHeight="55.0" prefWidth="93.0" text="Restant :">
+                     <font>
+                        <Font name="System Bold" size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="labLeft" prefHeight="55.0" prefWidth="81.0">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="3">
+               <children>
+                  <ListView fx:id="listViewDone" prefHeight="625.0" prefWidth="1203.0" style="-fx-background-radius: 10; -fx-border-color: #14BE0E; -fx-border-radius: 5; -fx-border-width: 4.5;">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </HBox.margin>
+                  </ListView>
+                  <ListView fx:id="listViewLeft" layoutX="255.0" layoutY="15.0" prefHeight="625.0" prefWidth="1203.0" style="-fx-background-radius: 10; -fx-border-color: #0000ff; -fx-border-width: 4.5; -fx-border-radius: 5;">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </HBox.margin>
+                  </ListView>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+               <children>
+                  <Button maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="45.0" prefWidth="200.0" text="Quitter">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="50.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doConfig" prefHeight="45.0" prefWidth="200.0" text="Configuration">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="75.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="butStop" layoutX="820.0" layoutY="20.0" maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doStop" prefHeight="45.0" prefWidth="200.0" text="Arrêter" visible="false">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="125.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="butStart" maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doStart" prefHeight="45.0" prefWidth="200.0" text="Lancer">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="50.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
+               <children>
+                  <Label prefHeight="45.0" prefWidth="113.0" text="Effectués :" textFill="#01ae72">
+                     <font>
+                        <Font name="System Bold" size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="240.0" right="10.0" top="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="10.0" prefHeight="45.0" prefWidth="119.0" text="En attente :" textFill="BLUE">
+                     <font>
+                        <Font name="System Bold" size="22.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="480.0" right="10.0" top="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ImageView fx:id="loadingIcon" fitHeight="40.0" fitWidth="40.0" visible="false">
+                     <image>
+                        <Image url="@images/LoadingIcon.jpg" />
+                     </image>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </GridPane>
+   </center>
+</BorderPane>

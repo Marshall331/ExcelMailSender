@@ -37,7 +37,6 @@ public class AlertUtilities {
 		if (_message == null || !_message.equals(""))
 			alert.setHeaderText(_message);
 		alert.setContentText(_content);
-
 		Optional<ButtonType> option = alert.showAndWait();
 		if (option.isPresent() && option.get() == ButtonType.OK) {
 			return true;

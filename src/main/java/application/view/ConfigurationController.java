@@ -539,6 +539,8 @@ public class ConfigurationController {
                 try {
                     newConfiguration.serverConf.port = Integer.valueOf(newValue);
                 } catch (Exception e) {
+                    minConfCompleted.setValue(false);
+                    StyleManager.setUndefinedTextAreaStyle(txtPort);
                 }
                 if (newValue.isEmpty() || newValue.length() < 1 || newConfiguration.serverConf.port == 0) {
                     minConfCompleted.setValue(false);

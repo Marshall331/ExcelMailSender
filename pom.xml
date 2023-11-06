@@ -80,7 +80,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx.maven.plugin.version}</version>
                 <configuration>
-                    <mainClass>C:\Users\1\Documents\mailauto\src\main\java\application\LancerApp.java</mainClass>
+                    <mainClass>src\main\java\application\LancerApp.java</mainClass>
                 </configuration>
             </plugin>
         </plugins>

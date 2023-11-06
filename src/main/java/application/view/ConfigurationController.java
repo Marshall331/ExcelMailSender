@@ -114,7 +114,7 @@ public class ConfigurationController {
         this.primaryStage = _primaryStage;
         oldConfiguration = ConfigurationManager.loadConf();
         newConfiguration = oldConfiguration;
-        
+
         this.initViewElements();
         this.initTestConnectionTask();
         this.updateViewElements();
@@ -386,9 +386,10 @@ public class ConfigurationController {
 
     private void setNewIcon(String _imgName) {
         this.loadingIcon.setRotate(0);
-        this.loadingIcon.setImage(new Image(
-                "C:\\Users\\1\\Documents\\mailauto\\src\\main\\resources\\application\\view\\images\\" + _imgName,
-                this.loadingIcon.getFitWidth(), this.loadingIcon.getFitHeight(), false, true));
+        String imagePath = "/application/view/images/" + _imgName;
+        this.loadingIcon.setImage(new Image(getClass().getResourceAsStream(imagePath),
+                this.loadingIcon.getFitWidth(), this.loadingIcon.getFitHeight(), true,
+                true));
         this.loadingIcon.setVisible(true);
     }
 

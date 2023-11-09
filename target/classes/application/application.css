@@ -47,6 +47,11 @@
     -fx-border-width: 2.5px;
 }
 
+.connectionTestButton{
+    -fx-background-radius: 15;
+    -fx-background-color: rgba(90, 138, 168, 0.927);
+}
+
 .fileChooserButton {
     -fx-background-radius: 15;
     -fx-background-color: rgba(173, 187, 19, 0.927);

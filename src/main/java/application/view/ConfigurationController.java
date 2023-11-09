@@ -3,6 +3,7 @@ package application.view;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,9 @@ import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -28,7 +31,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
@@ -76,8 +79,6 @@ public class ConfigurationController {
 
     @FXML
     private Button buttConnectionTest;
-    private Tooltip tooltipTestConnection = new Tooltip(
-            "Merci de tester la connection au serveur de messagerie avant.");
 
     @FXML
     private ImageView loadingIcon;
@@ -89,7 +90,7 @@ public class ConfigurationController {
     @FXML
     private Button buttExcelFileTest;
     private Tooltip tooltipTestExcelFile = new Tooltip(
-            "Merci de sélectionner un fichier avant de le tester.");
+            "Permet de récupérer la valeur de la case à la colonne et ligne de début entré.");
 
     @FXML
     private TextArea txtPathpdf;
@@ -110,6 +111,9 @@ public class ConfigurationController {
     private TextArea txtLineEndIndex;
 
     @FXML
+    private Label labPDFFileCount;
+
+    @FXML
     private TextArea txtMailSubject;
 
     @FXML
@@ -119,7 +123,7 @@ public class ConfigurationController {
     private Button buttStart;
 
     private Task<Void> sendingTask;
-    private boolean isCurrentlyConnected;
+    // private boolean isCurrentlyConnected;
 
     private BooleanProperty hostIsFilled = new SimpleBooleanProperty();
     private BooleanProperty portIsFilled = new SimpleBooleanProperty();
@@ -132,12 +136,11 @@ public class ConfigurationController {
         this.mailAutoApp = _mailAutoApp;
         this.primaryStage = _primaryStage;
         oldConfiguration = ConfigurationManager.loadConf();
-        newConfiguration = oldConfiguration;
+        newConfiguration = ConfigurationManager.loadConf();
 
         this.initMinConfIsFilledObserver();
         this.initViewElements();
         this.initTestConnectionTask();
-        this.updateViewElements();
     }
 
     private void initMinConfIsFilledObserver() {
@@ -161,10 +164,9 @@ public class ConfigurationController {
         this.primaryStage.setOnCloseRequest(e -> {
             this.doLeave();
         });
-
-        this.tooltipTestConnection.setShowDelay(Duration.ZERO);
-        // Tooltip.install(this.buttStart, tooltipTestConnection);
-
+        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
+        System.out.println("NEW : " + this.newConfiguration.isConfOk);
+        // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
         this.tooltipTestExcelFile.setShowDelay(Duration.ZERO);
         Tooltip.install(this.buttExcelFileTest, tooltipTestExcelFile);
 
@@ -182,14 +184,23 @@ public class ConfigurationController {
         if (this.oldConfiguration.isConfOk) {
             try {
                 if (ServerBaseConfiguration.isSameConf(this.oldConfiguration.serverConf,
-                        this.newConfiguration.serverConf)) {
+                        this.newConfiguration.serverConf) && this.minConfIsFilled.getValue()) {
+                    this.newConfiguration.isConfOk = true;
                     setNewIcon("SuccesIcon.png");
+                    // this.isCurrentlyConnected = true;
                     return true;
                 } else {
+                    this.newConfiguration.isConfOk = false;
                     setNewIcon("FailedIcon.png");
                 }
             } catch (Exception e) {
+                this.newConfiguration.isConfOk = false;
+                setNewIcon("FailedIcon.png");
+                // this.isCurrentlyConnected = false;
             }
+        } else {
+            this.newConfiguration.isConfOk = false;
+            setNewIcon("FailedIcon.png");
         }
         return false;
     }
@@ -237,10 +248,11 @@ public class ConfigurationController {
         if (this.oldConfiguration.pathFilexlsx.length() > 0) {
             this.txtPathxlsx.setText("" + this.oldConfiguration.pathFilexlsx);
         }
-        if (this.oldConfiguration.pathFilepdf.length() > 0) {
+        if (this.oldConfiguration.pathFilepdf.size() > 0) {
             this.txtPathpdf.setText("" + this.oldConfiguration.pathFilepdf);
+            this.labPDFFileCount.setText("" + this.oldConfiguration.pathFilepdf.size());
         } else {
-            StyleManager.setUndefinedTextAreaStyle(txtPathxlsx);
+            this.labPDFFileCount.setText("" + 0);
         }
         if (this.oldConfiguration.mailSubject.length() > 0) {
             this.txtMailSubject.setText(this.oldConfiguration.mailSubject);
@@ -248,12 +260,8 @@ public class ConfigurationController {
         if (this.oldConfiguration.mailContent.length() > 0) {
             this.txtMailContent.setText(this.oldConfiguration.mailContent);
         }
-
-        if (this.oldConfiguration.isConfOk) {
-            setNewIcon("SuccesIcon.png");
-        } else {
-            setNewIcon("FailedIcon.png");
-        }
+        // this.isCurrentlyConnected = this.oldConfiguration.isConfOk;
+        this.checkMinConfIsCorrect();
     }
 
     private void initTestConnectionTask() {
@@ -261,26 +269,28 @@ public class ConfigurationController {
             @Override
             protected Void call() throws Exception {
                 try {
-                    isCurrentlyConnected = MailSender.sendingTest(txtMail.getText().trim(), txtPassword.getText(),
-                            txtHost.getText().trim(), Integer.valueOf(txtPort.getText().trim()),
-                            cbAuth.isSelected() == true ? true : false, cbtls.isSelected() == true ? true : false);
+                    newConfiguration.isConfOk = MailSender.sendingTest(newConfiguration.serverConf.mail,
+                            newConfiguration.serverConf.password, newConfiguration.serverConf.host,
+                            newConfiguration.serverConf.port, newConfiguration.serverConf.authentification,
+                            newConfiguration.serverConf.tlsenable);
                 } catch (Exception e) {
                     cancel();
-                    System.out.println(e);
                 }
                 return null;
             }
         };
         this.sendingTask.setOnSucceeded(e -> {
             loadingIconAnimation.stop();
-            if (isCurrentlyConnected) {
-                this.newConfiguration.isConfOk = true;
+            System.out.println("OLD : " + this.oldConfiguration.isConfOk);
+            System.out.println("NEW : " + this.newConfiguration.isConfOk);
+            // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
+            if (newConfiguration.isConfOk) {
+                this.saveConf();
                 this.setNewIcon("SuccesIcon.png");
                 AlertUtilities.showAlert(primaryStage, "Connexion établie.",
                         "Connexion réussie !", "La connexion au service de messagerie a bien été établie !",
                         AlertType.INFORMATION);
             } else {
-                this.newConfiguration.isConfOk = false;
                 this.setNewIcon("FailedIcon.png");
                 AlertUtilities.showAlert(primaryStage, "Echec de la connexion.", "Echec de la connexion !",
                         "Merci de saisir les bon paramètres de votre messagerie.", AlertType.ERROR);
@@ -312,6 +322,7 @@ public class ConfigurationController {
             if (this.minConfIsFilled.getValue()) {
                 this.initTestConnectionTask();
                 new Thread(sendingTask).start();
+                this.saveConf();
             } else {
                 AlertUtilities.showAlert(primaryStage, "Opération impossible.",
                         "Impossible de lancer le test de connexion.",
@@ -323,14 +334,24 @@ public class ConfigurationController {
 
     @FXML
     private void doStart() {
-        if (this.checkMinConfIsCorrect()) {
-            this.saveNewConf();
-            SendMails sM = new SendMails(primaryStage);
-        } else {
+        this.checkMinConfIsCorrect();
+        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
+        System.out.println("NEW : " + this.newConfiguration.isConfOk);
+        if (this.sendingTask.isRunning()) {
             AlertUtilities.showAlert(primaryStage, "Opération impossible.",
-                    "Veuillez vérifier la connextion au serveur de messagerie d'abord !",
-                    "Merci d'effectuer le test de connexion au serveur de messagerie avant de passer à la suite.",
-                    AlertType.ERROR);
+                    "Connexion au serveur de messagerie en cours.",
+                    "Le test de connexion au serveur est en cours, veuillez patientez.",
+                    AlertType.INFORMATION);
+        } else {
+            if (this.newConfiguration.isConfOk) {
+                this.saveConf();
+                SendMails sM = new SendMails(primaryStage);
+            } else {
+                AlertUtilities.showAlert(primaryStage, "Opération impossible.",
+                        "Veuillez tester la connextion au serveur de messagerie d'abord !",
+                        "Merci d'effectuer le test de connexion au serveur de messagerie avant !",
+                        AlertType.ERROR);
+            }
         }
     }
 
@@ -339,7 +360,10 @@ public class ConfigurationController {
         if (this.sendingTask.isRunning()) {
             this.sendingTask.cancel(true);
         }
-        // System.out.println("FIN : " + this.newConfiguration.isConfOk);
+        this.saveConf();
+        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
+        System.out.println("NEW : " + this.newConfiguration.isConfOk);
+        // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
         this.primaryStage.close();
         System.exit(0);
     }
@@ -353,18 +377,10 @@ public class ConfigurationController {
         }
     }
 
-    @FXML
-    private void doSaveConf() {
-        this.saveNewConf();
-        AlertUtilities.showAlert(primaryStage, "Opération réussie.", "Sauvegarde effectué !",
-                "La configuration a bien été sauvegardé.", AlertType.INFORMATION);
-    }
-
-    private void saveNewConf() {
+    private void saveConf() {
+        // this.newConfiguration.isConfOk = isCurrentlyConnected;
         ConfigurationManager.saveConf(newConfiguration);
-    }
-
-    private void updateViewElements() {
+        this.oldConfiguration = ConfigurationManager.loadConf();
     }
 
     private void setNewIcon(String _imgName) {
@@ -398,22 +414,22 @@ public class ConfigurationController {
             } catch (FileNotFoundException e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Fichier Excel introuvable",
                         "Le fichier Excel spécifié n'a pas été trouvé, merci de réessayer avec le bon fichier .xlsx.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             } catch (NumberFormatException e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Numéro de colonne ou de ligne incorrect !",
                         "Merci de vérifier le bon numéro de colonne et de ligne de la valeur à récupérer.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             } catch (IOException e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Erreur lors de la lecture du fichier Excel",
                         "Quelque chose d'anormale s'est produit durant la lecture du fichier, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             } catch (Exception e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Une erreur inattendue s'est produite",
                         "\"Quelque chose d'anormale s'est produit, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             }
         }
@@ -435,15 +451,20 @@ public class ConfigurationController {
         });
 
         FileChooser filepdf = new FileChooser();
-        filepdf.setTitle("Sélectionnez le fichier pdf");
-        filepdf.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf"));
+        filepdf.setTitle("Sélectionnez les fichiers PDF");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
+        filepdf.getExtensionFilters().add(extFilter);
         filepdf.setInitialDirectory(initialDirectory);
 
         this.btnFilepdf.setOnAction(e -> {
-            File selectedFile = filepdf.showOpenDialog(primaryStage);
-            if (selectedFile != null) {
-                this.txtPathpdf.setText(selectedFile.getAbsolutePath());
+            List<File> selectedFiles = filepdf.showOpenMultipleDialog(primaryStage);
+            if (selectedFiles != null && !selectedFiles.isEmpty()) {
+                StringBuilder filesPaths = new StringBuilder();
+                for (File file : selectedFiles) {
+                    filesPaths.append(file.getAbsolutePath()).append("\n");
+                }
+                this.txtPathpdf.setText(selectedFiles.toString());
+                this.labPDFFileCount.setText("" + selectedFiles.size());
             }
         });
     }
@@ -468,7 +489,7 @@ public class ConfigurationController {
         });
 
         this.buttExcelFileTest.setOnMouseExited(event -> {
-            tooltipTestConnection.hide();
+            tooltipTestExcelFile.hide();
         });
     }
 
@@ -478,9 +499,6 @@ public class ConfigurationController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newValue = newValue.trim();
-                if (oldConfiguration.isConfOk) {
-                    checkMinConfIsCorrect();
-                }
                 if (newValue.isEmpty() || newValue.length() < 1) {
                     hostIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtHost);
@@ -492,6 +510,9 @@ public class ConfigurationController {
                     imgUndefinedHost.setVisible(false);
                 }
                 newConfiguration.serverConf.host = newValue;
+                if (oldConfiguration.isConfOk) {
+                    checkMinConfIsCorrect();
+                }
             }
         });
 
@@ -500,9 +521,6 @@ public class ConfigurationController {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newConfiguration.serverConf.port = oldConfiguration.serverConf.port;
                 newValue = newValue.trim();
-                if (oldConfiguration.isConfOk) {
-                    checkMinConfIsCorrect();
-                }
                 try {
                     newConfiguration.serverConf.port = Integer.valueOf(newValue);
                 } catch (Exception e) {
@@ -520,24 +538,23 @@ public class ConfigurationController {
                     StyleManager.resetTextAreaStyle(txtPort);
                     imgUndefinedPort.setVisible(false);
                 }
+                if (oldConfiguration.isConfOk) {
+                    checkMinConfIsCorrect();
+                }
             }
         });
 
         this.cbAuth.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            // checkMinConfIsCorrect();
-            if (newValue) {
-                this.newConfiguration.serverConf.authentification = true;
-            } else {
-                this.newConfiguration.serverConf.authentification = false;
+            this.newConfiguration.serverConf.authentification = newValue;
+            if (oldConfiguration.isConfOk) {
+                checkMinConfIsCorrect();
             }
         });
 
         this.cbtls.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            // checkMinConfIsCorrect();
-            if (newValue) {
-                this.newConfiguration.serverConf.authentification = true;
-            } else {
-                this.newConfiguration.serverConf.authentification = false;
+            this.newConfiguration.serverConf.tlsenable = newValue;
+            if (oldConfiguration.isConfOk) {
+                checkMinConfIsCorrect();
             }
         });
 
@@ -545,9 +562,6 @@ public class ConfigurationController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newValue = newValue.trim();
-                if (oldConfiguration.isConfOk) {
-                    checkMinConfIsCorrect();
-                }
                 if (newValue.isEmpty() || !isMailCorrect(newValue)) {
                     mailIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtMail);
@@ -558,6 +572,9 @@ public class ConfigurationController {
                     imgUndefinedMail.setVisible(false);
                 }
                 newConfiguration.serverConf.mail = newValue;
+                if (oldConfiguration.isConfOk) {
+                    checkMinConfIsCorrect();
+                }
             }
         });
 
@@ -565,9 +582,6 @@ public class ConfigurationController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newValue = newValue.trim();
-                if (oldConfiguration.isConfOk) {
-                    checkMinConfIsCorrect();
-                }
                 if (newValue.isEmpty() || newValue.length() < 1) {
                     passwdIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtPassword);
@@ -578,29 +592,65 @@ public class ConfigurationController {
                     imgUndefinedPasswd.setVisible(false);
                 }
                 newConfiguration.serverConf.password = newValue;
-            }
-        });
-
-        txtPathxlsx.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue = newValue.trim();
-                if (newValue.isEmpty()) {
-                    StyleManager.setUndefinedTextAreaStyle(txtPathxlsx);
-                } else {
-                    StyleManager.resetTextAreaStyle(txtPathxlsx);
+                if (oldConfiguration.isConfOk) {
+                    checkMinConfIsCorrect();
                 }
-                newConfiguration.pathFilexlsx = newValue;
             }
         });
 
-        txtPathpdf.textProperty().addListener(new ChangeListener<String>() {
+        // txtPathxlsx.textProperty().addListener(new ChangeListener<String>() {
+        // @Override
+        // public void changed(ObservableValue<? extends String> observable, String
+        // oldValue, String newValue) {
+        // newValue = newValue.trim();
+        // newConfiguration.pathFilexlsx = newValue;
+        // }
+        // });
+
+        txtColumnIndex.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newValue = newValue.trim();
-                newConfiguration.pathFilepdf = newValue.trim();
+                try {
+                    newConfiguration.columnIndex = Integer.valueOf(newValue);
+                } catch (Exception e) {
+                    newConfiguration.columnIndex = oldConfiguration.columnIndex;
+                }
             }
         });
+
+        txtLineStartIndex.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                newValue = newValue.trim();
+                try {
+                    newConfiguration.lineStartIndex = Integer.valueOf(newValue);
+                } catch (Exception e) {
+                    newConfiguration.lineStartIndex = oldConfiguration.lineStartIndex;
+                }
+            }
+        });
+
+        txtLineEndIndex.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                newValue = newValue.trim();
+                try {
+                    newConfiguration.lineEndIndex = Integer.valueOf(newValue);
+                } catch (Exception e) {
+                    newConfiguration.lineEndIndex = oldConfiguration.lineEndIndex;
+                }
+            }
+        });
+
+        // txtPathpdf.textProperty().addListener(new ChangeListener<String>() {
+        // @Override
+        // public void changed(ObservableValue<? extends String> observable, String
+        // oldValue, String newValue) {
+        // newValue = newValue.trim();
+        // newConfiguration.pathFilepdf = newValue.trim();
+        // }
+        // });
 
         txtMailSubject.textProperty().addListener(new ChangeListener<String>() {
             @Override

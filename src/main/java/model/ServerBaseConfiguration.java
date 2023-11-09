@@ -39,4 +39,8 @@ public class ServerBaseConfiguration implements Serializable {
                 && _previousConf.tlsenable == _newConf.tlsenable && _previousConf.mail.equals(_newConf.mail)
                 && _previousConf.password.equals(_newConf.password));
     }
+
+    public void print() {
+        System.out.println(this.host + "" + this.port);
+    }
 }

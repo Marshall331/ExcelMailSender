@@ -21,14 +21,6 @@
     -fx-focus-color: rgba(252, 0, 0, 0.669);
 }
 
-/* .undefined-txtArea:hover {
-    -fx-border-color: black;
-}
-
-.undefined-txtArea:focused {
-    -fx-border-color: #30afb8;
-} */
-
 .button {
     -fx-background-radius: 10;
     -fx-background-color: grey;
@@ -67,7 +59,12 @@
     -fx-background-color: rgba(19, 187, 19, 0.847);
 }
 
-.saveButton {
+.stopButton {
+    -fx-background-radius: 15;
+    -fx-background-color: rgba(187, 128, 19, 0.847);
+}
+
+.confButton {
     -fx-background-radius: 15;
     -fx-background-color: #30afb8;
 }

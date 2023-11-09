@@ -90,37 +90,57 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
                <children>
-                  <Button maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="45.0" prefWidth="200.0" text="Quitter">
+                  <Button maxHeight="50.0" maxWidth="130.0" minHeight="50.0" minWidth="130.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="50.0" prefWidth="130.0" stylesheets="@../application.css" text="Quitter">
                      <font>
-                        <Font size="22.0" />
+                        <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="10.0" left="50.0" right="10.0" top="10.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="leaveButton" />
+                        <String fx:value="mainButtonOnClick" />
+                        <String fx:value="mainButtonOnHover" />
+                     </styleClass>
                   </Button>
-                  <Button maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doConfig" prefHeight="45.0" prefWidth="200.0" text="Configuration">
+                  <Button maxHeight="50.0" maxWidth="220.0" minHeight="50.0" minWidth="220.0" mnemonicParsing="false" onAction="#doConfig" prefHeight="50.0" prefWidth="220.0" stylesheets="@../application.css" text="Configuration">
                      <font>
-                        <Font size="22.0" />
+                        <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="10.0" left="75.0" right="10.0" top="10.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="confButton" />
+                        <String fx:value="mainButtonOnClick" />
+                        <String fx:value="mainButtonOnHover" />
+                     </styleClass>
                   </Button>
-                  <Button fx:id="butStop" layoutX="820.0" layoutY="20.0" maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doStop" prefHeight="45.0" prefWidth="200.0" text="Arrêter" visible="false">
+                  <Button fx:id="butStop" disable="true" layoutX="820.0" layoutY="20.0" maxHeight="50.0" maxWidth="180.0" minHeight="50.0" minWidth="180.0" mnemonicParsing="false" onAction="#doStop" prefHeight="50.0" prefWidth="180.0" stylesheets="@../application.css" text="Arrêter">
                      <font>
-                        <Font size="22.0" />
+                        <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="125.0" right="10.0" top="10.0" />
+                        <Insets bottom="10.0" left="225.0" right="10.0" top="10.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="stopButton" />
+                        <String fx:value="mainButtonOnClick" />
+                        <String fx:value="mainButtonOnHover" />
+                     </styleClass>
                   </Button>
-                  <Button fx:id="butStart" maxHeight="45.0" maxWidth="200.0" minWidth="45.0" mnemonicParsing="false" onAction="#doStart" prefHeight="45.0" prefWidth="200.0" text="Lancer">
+                  <Button fx:id="butStart" maxHeight="50.0" maxWidth="180.0" minHeight="50.0" minWidth="180.0" mnemonicParsing="false" onAction="#doStart" prefHeight="50.0" prefWidth="180.0" stylesheets="@../application.css" text="Lancer">
                      <font>
-                        <Font size="22.0" />
+                        <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="50.0" right="10.0" top="10.0" />
+                        <Insets bottom="10.0" left="10.0" right="50.0" top="10.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="startButton" />
+                        <String fx:value="mainButtonOnClick" />
+                        <String fx:value="mainButtonOnHover" />
+                     </styleClass>
                   </Button>
                </children>
             </HBox>

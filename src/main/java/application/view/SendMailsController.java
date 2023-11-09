@@ -144,23 +144,23 @@ public class SendMailsController {
         this.sendingTask.setOnSucceeded(e ->
 
         {
-            this.butStop.setVisible(false);
-            this.butStart.setVisible(true);
+            this.butStop.setDisable(true);
+            this.butStart.setDisable(false);
             Animations.stopLoadingAnimation(loadingIcon, this.loadingIconAnimation);
         });
         this.sendingTask.setOnFailed(e -> {
-            this.butStop.setVisible(false);
-            this.butStart.setVisible(true);
+            this.butStop.setDisable(true);
+            this.butStart.setDisable(false);
             Animations.stopLoadingAnimation(loadingIcon, this.loadingIconAnimation);
         });
         this.sendingTask.setOnCancelled(e -> {
-            this.butStop.setVisible(false);
-            this.butStart.setVisible(true);
+            this.butStop.setDisable(true);
+            this.butStart.setDisable(false);
             Animations.stopLoadingAnimation(loadingIcon, this.loadingIconAnimation);
         });
         this.sendingTask.setOnRunning(e -> {
-            this.butStop.setVisible(true);
-            this.butStart.setVisible(false);
+            this.butStop.setDisable(false);
+            this.butStart.setDisable(true);
             this.loadingIconAnimation = Animations.startLoadingAnimation(this.loadingIcon);
         });
     }
@@ -234,39 +234,36 @@ public class SendMailsController {
             } catch (FileNotFoundException e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Fichier Excel introuvable",
                         "Le fichier Excel spécifié n'a pas été trouvé, merci de réessayer avec le bon fichier .xlsx.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             } catch (IOException e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Erreur lors de la lecture du fichier Excel",
                         "Quelque chose d'anormale s'est produit durant la lecture du fichier, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             } catch (Exception e) {
                 AlertUtilities.showAlert(primaryStage, "Erreur", "Une erreur inattendue s'est produite",
                         "\"Quelque chose d'anormale s'est produit, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
-                                + e.getMessage(),
+                                + e,
                         AlertType.ERROR);
             }
         }
     }
 
-    private boolean checkAttachmentIsOk() {
-        if (!this.conf.pathFilepdf.trim().isEmpty()) {
-            try (PDDocument document = PDDocument.load(new File(this.conf.pathFilepdf))) {
-            } catch (FileNotFoundException e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Pièce jointe introuvable.",
-                        "La pièce jointe spécifié n'a pas été trouvée, merci de réessayer.\nCode d'erreur : "
-                                + e.getMessage(),
-                        AlertType.ERROR);
-            } catch (IOException e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Erreur lors de la lecture de la pièce jointe.",
-                        "Quelque chose d'anormale s'est produit durant la lecture du fichier, merci de réessayer.\nCode d'erreur : "
-                                + e.getMessage(),
-                        AlertType.ERROR);
-                        return false;
-            }
+    private String checkAttachmentIsOk(String _filePath) {
+        String res = "";
+        try (PDDocument document = PDDocument.load(new File(_filePath))) {
+        } catch (FileNotFoundException e) {
+            res = "\nPièce jointe introuvable.\nLa pièce jointe spécifié au chemin suivant n'a pas été trouvée, veuillez réessayer.\n"
+                    + _filePath + "Code d'erreur : ";
+        } catch (IOException e) {
+            res = "Erreur lors de la lecture de la pièce jointe.\nQuelque chose d'anormale s'est produit durant la vérification de la pièce jointe suivante, veuillez réessayer.\n"
+                    + _filePath + "\nCode d'erreur : " + e;
+        } catch (Exception e) {
+            res = "\nErreur lors de la lecture de la pièce jointe.\nQuelque chose d'anormale s'est produit durant la vérification de la pièce jointe suivante, veuillez réessayer.\n"
+                    + _filePath + "\nCode d'erreur : " + e;
         }
-        return true;
+        return res;
     }
 
     @FXML
@@ -282,16 +279,17 @@ public class SendMailsController {
             AlertUtilities.showAlert(primaryStage, "Erreur.", "Des envois sont déjà en cours, veuillez attendre.", null,
                     AlertType.INFORMATION);
         } else {
-            if (this.checkAttachmentIsOk()) {
+            boolean allOk = true;
+            for (String path : this.conf.pathFilepdf) {
+                allOk = this.checkAttachmentIsOk(path);
+            }
+            if (allOk) {
                 if (this.listLeft.size() == 0) {
                     this.sendEmails();
                 }
                 this.initSendingTask();
                 new Thread(sendingTask).start();
-                System.out.println(this.sendingTask.isRunning());
             }
-            System.out.println(this.sendingTask.isRunning());
-
         }
     }
 
@@ -312,7 +310,7 @@ public class SendMailsController {
         } catch (Exception e) {
             AlertUtilities.showAlert(primaryStage, "Erreur", "Erreur lors de l'envoi du mail.'",
                     "Quelque chose d'anormale s'est produit lors de l'envoi du mail, merci de réessayer.\nCode d'erreur : "
-                            + e.getMessage(),
+                            + e,
                     AlertType.ERROR);
         }
     }

@@ -82,8 +82,9 @@ public class MailSender {
             textPart.setText(_conf.mailContent);
 
             MimeBodyPart attachmentPart = new MimeBodyPart();
-            String file = _conf.pathFilepdf;
-            String fileName = Paths.get(_conf.pathFilepdf).getFileName().toString();
+
+            String file = _conf.pathFilepdf.pop();
+            String fileName = Paths.get(file).getFileName().toString();
             DataSource source = new FileDataSource(file);
             attachmentPart.setDataHandler(new DataHandler(source));
             attachmentPart.setFileName(fileName);

@@ -60,7 +60,7 @@
                         <Font size="18.0" />
                      </font>
                   </TextArea>
-                  <Button fx:id="buttConnectionTest" maxHeight="45.0" maxWidth="317.0" minHeight="45.0" minWidth="156.0" mnemonicParsing="false" onAction="#doConnectionTest" prefHeight="45.0" prefWidth="272.0" stylesheets="@../application.css" text="Tester la connection">
+                  <Button fx:id="buttConnectionTest" maxHeight="45.0" maxWidth="186.0" minHeight="45.0" minWidth="186.0" mnemonicParsing="false" onAction="#doConnectionTest" prefHeight="45.0" prefWidth="186.0" stylesheets="@../application.css" text="Tester la connection">
                      <font>
                         <Font name="System Bold" size="17.0" />
                      </font>
@@ -74,35 +74,42 @@
                         <String fx:value="mainButtonOnHover" />
                      </styleClass>
                   </Button>
-                  <ImageView fx:id="loadingIcon" fitHeight="40.0" fitWidth="40.0" visible="false">
+                  <ImageView fx:id="loadingIcon" fitHeight="45.0" fitWidth="45.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="10.0" top="5.0" />
+                     </HBox.margin>
                      <image>
                         <Image url="@images/LoadingIcon.jpg" />
                      </image>
-                     <HBox.margin>
-                        <Insets bottom="7.5" right="10.0" top="7.5" />
-                     </HBox.margin>
                   </ImageView>
                </children>
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="4">
                <children>
-                  <Label layoutX="20.0" layoutY="20.0" maxWidth="260.0" minWidth="260.0" prefHeight="55.0" prefWidth="260.0" text="Lien vers pièce jointe PDF :">
+                  <Label layoutX="20.0" layoutY="20.0" maxWidth="651.0" minWidth="144.0" prefHeight="55.0" prefWidth="216.0" text="Pièce(s) jointe(s) pdf :">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                      <HBox.margin>
-                        <Insets left="10.0" right="5.0" />
+                        <Insets left="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextArea fx:id="txtPathpdf" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="883.0" minHeight="45.0" minWidth="637.0" prefHeight="45.0" prefWidth="738.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <Label fx:id="labPDFFileCount" alignment="CENTER" maxWidth="45.0" minWidth="45.0" prefHeight="55.0" prefWidth="45.0">
+                     <font>
+                        <Font name="System Bold" size="30.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin></Label>
+                  <TextArea fx:id="txtPathpdf" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="883.0" minHeight="45.0" minWidth="637.0" prefHeight="45.0" prefWidth="705.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                      <font>
-                        <Font size="18.0" />
+                        <Font size="17.0" />
                      </font>
                   </TextArea>
-                  <Button fx:id="btnFilepdf" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Choisir un fichier">
+                  <Button fx:id="btnFilepdf" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
@@ -138,7 +145,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="80.0" prefHeight="130.0" prefWidth="1200.0" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                <children>
-                  <Button layoutX="619.0" layoutY="20.0" maxHeight="50.0" maxWidth="200.0" minHeight="50.0" minWidth="200.0" mnemonicParsing="false" onAction="#doReset" prefHeight="50.0" prefWidth="200.0" stylesheets="@../application.css" text="Réinitialiser">
+                  <Button layoutX="619.0" layoutY="20.0" maxHeight="50.0" maxWidth="220.0" minHeight="50.0" minWidth="220.0" mnemonicParsing="false" onAction="#doReset" prefHeight="50.0" prefWidth="220.0" stylesheets="@../application.css" text="Réinitialiser">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
@@ -151,12 +158,12 @@
                         <String fx:value="mainButtonOnClick" />
                      </styleClass>
                   </Button>
-                  <Button maxHeight="50.0" maxWidth="150.0" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="50.0" prefWidth="150.0" stylesheets="@../application.css" text="Quitter">
+                  <Button maxHeight="50.0" maxWidth="130.0" minHeight="50.0" minWidth="130.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="50.0" prefWidth="130.0" stylesheets="@../application.css" text="Quitter">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="340.0" right="10.0" top="10.0" />
+                        <Insets bottom="10.0" left="540.0" right="10.0" top="10.0" />
                      </HBox.margin>
                      <styleClass>
                         <String fx:value="leaveButton" />
@@ -164,25 +171,12 @@
                         <String fx:value="mainButtonOnClick" />
                      </styleClass>
                   </Button>
-                  <Button layoutX="510.0" layoutY="20.0" maxHeight="50.0" maxWidth="200.0" minHeight="50.0" minWidth="200.0" mnemonicParsing="false" onAction="#doSaveConf" prefHeight="50.0" prefWidth="200.0" stylesheets="@../application.css" text="Sauvegarder">
+                  <Button fx:id="buttStart" maxHeight="50.0" maxWidth="180.0" minHeight="50.0" minWidth="180.0" mnemonicParsing="false" onAction="#doStart" prefHeight="50.0" prefWidth="180.0" stylesheets="@../application.css" text="Valider">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                      <HBox.margin>
-                        <Insets bottom="10.0" left="25.0" right="25.0" top="10.0" />
-                     </HBox.margin>
-                     <styleClass>
-                        <String fx:value="saveButton" />
-                        <String fx:value="mainButtonOnHover" />
-                        <String fx:value="mainButtonOnClick" />
-                     </styleClass>
-                  </Button>
-                  <Button fx:id="buttStart" maxHeight="50.0" maxWidth="150.0" minHeight="50.0" minWidth="150.0" mnemonicParsing="false" onAction="#doStart" prefHeight="50.0" prefWidth="150.0" stylesheets="@../application.css" text="Valider">
-                     <font>
-                        <Font name="System Bold" size="22.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="25.0" top="10.0" />
+                        <Insets bottom="10.0" left="10.0" right="50.0" top="10.0" />
                      </HBox.margin>
                      <styleClass>
                         <String fx:value="startButton" />
@@ -294,7 +288,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="65.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="2">
                <children>
-                  <Label layoutX="20.0" layoutY="20.0" maxWidth="230.0" minWidth="230.0" prefHeight="55.0" prefWidth="230.0" text="Lien vers le fichier xlsx :">
+                  <Label layoutX="20.0" layoutY="20.0" maxWidth="230.0" minWidth="128.0" prefHeight="55.0" prefWidth="128.0" text="Fichier Excel :">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
@@ -302,15 +296,15 @@
                         <Insets left="10.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextArea fx:id="txtPathxlsx" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="1013.0" minHeight="45.0" minWidth="633.0" prefHeight="45.0" prefWidth="817.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <TextArea fx:id="txtPathxlsx" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="1013.0" minHeight="45.0" minWidth="633.0" prefHeight="45.0" prefWidth="876.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <font>
-                        <Font size="18.0" />
+                        <Font size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button fx:id="btnFilexlsx" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Choisir un fichier">
+                  <Button fx:id="btnFilexlsx" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
@@ -334,6 +328,20 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="3">
                <children>
+                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="186.0" minHeight="45.0" minWidth="186.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="186.0" stylesheets="@../application.css" text="Tester le fichier">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                     <styleClass>
+                        <String fx:value="connectionTestButton" />
+                        <String fx:value="fileTestButton" />
+                        <String fx:value="SecondaryButtonOnHover" />
+                        <String fx:value="SecondaryButtonOnClick" />
+                     </styleClass>
+                  </Button>
                   <Label prefHeight="55.0" prefWidth="286.0" text="Colonne cible du fichier xlsx :">
                      <font>
                         <Font name="System Bold" size="20.0" />
@@ -342,9 +350,9 @@
                         <Insets left="10.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextArea fx:id="txtColumnIndex" maxHeight="45.0" maxWidth="70.0" minHeight="45.0" minWidth="70.0" prefHeight="45.0" prefWidth="70.0" promptText="Ex : 1" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <TextArea fx:id="txtColumnIndex" maxHeight="45.0" maxWidth="125.0" minHeight="45.0" minWidth="125.0" prefHeight="45.0" prefWidth="125.0" promptText="Ex : 1" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
@@ -358,29 +366,15 @@
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextArea fx:id="txtLineStartIndex" maxHeight="45.0" maxWidth="70.0" minHeight="45.0" minWidth="70.0" prefHeight="45.0" prefWidth="70.0" promptText="Ex : 5" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <TextArea fx:id="txtLineStartIndex" maxHeight="45.0" maxWidth="125.0" minHeight="45.0" minWidth="125.0" prefColumnCount="1" prefHeight="45.0" prefRowCount="1" prefWidth="125.0" promptText="Ex : 5" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="580.0" minHeight="45.0" minWidth="310.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="346.0" stylesheets="@../application.css" text="Tester le fichier (récupère la valeur)">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </HBox.margin>
-                     <styleClass>
-                        <String fx:value="connectionTestButton" />
-                        <String fx:value="fileTestButton" />
-                        <String fx:value="SecondaryButtonOnHover" />
-                        <String fx:value="SecondaryButtonOnClick" />
-                     </styleClass>
-                  </Button>
-                  <Label prefHeight="55.0" prefWidth="125.0" text="Ligne de fin :">
+                  <Label prefHeight="55.0" prefWidth="139.0" text="Ligne de fin :">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
@@ -388,9 +382,9 @@
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextArea fx:id="txtLineEndIndex" maxHeight="59.0" maxWidth="70.0" minHeight="45.0" minWidth="70.0" prefHeight="59.0" prefWidth="70.0" promptText="Ex : 9" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <TextArea fx:id="txtLineEndIndex" maxHeight="59.0" maxWidth="125.0" minHeight="45.0" minWidth="125.0" prefColumnCount="1" prefHeight="59.0" prefRowCount="1" prefWidth="125.0" promptText="Ex : 9" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />

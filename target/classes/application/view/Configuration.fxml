@@ -366,13 +366,19 @@
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="580.0" minHeight="45.0" minWidth="310.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="356.0" style="-fx-background-radius: 15; -fx-border-color: black; -fx-border-radius: 10; -fx-border-width: 3;" text="Récupérer la valeur de la case (Test du fichier)">
+                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="580.0" minHeight="45.0" minWidth="310.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="346.0" stylesheets="@../application.css" text="Tester le fichier (récupère la valeur)">
                      <font>
-                        <Font size="16.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="connectionTestButton" />
+                        <String fx:value="fileTestButton" />
+                        <String fx:value="SecondaryButtonOnHover" />
+                        <String fx:value="SecondaryButtonOnClick" />
+                     </styleClass>
                   </Button>
                   <Label prefHeight="55.0" prefWidth="125.0" text="Ligne de fin :">
                      <font>
@@ -392,7 +398,7 @@
                   </TextArea>
                </children>
             </HBox>
-            <ImageView fitHeight="45.0" fitWidth="45.0">
+            <ImageView fx:id="imgUndefinedHost" fitHeight="45.0" fitWidth="45.0" visible="false">
                <image>
                   <Image url="@images/UndefinedIcon.png" />
                </image>
@@ -400,7 +406,7 @@
                   <Insets bottom="5.0" left="495.0" top="5.0" />
                </GridPane.margin>
             </ImageView>
-            <ImageView fitHeight="45.0" fitWidth="45.0">
+            <ImageView fx:id="imgUndefinedMail" fitHeight="45.0" fitWidth="45.0" visible="false">
                <image>
                   <Image url="@images/UndefinedIcon.png" />
                </image>
@@ -408,7 +414,7 @@
                   <Insets left="495.0" top="110.0" />
                </GridPane.margin>
             </ImageView>
-            <ImageView fitHeight="45.0" fitWidth="45.0" layoutX="505.0" layoutY="15.0">
+            <ImageView fx:id="imgUndefinedPort" fitHeight="45.0" fitWidth="45.0" layoutX="505.0" layoutY="15.0" visible="false">
                <image>
                   <Image url="@images/UndefinedIcon.png" />
                </image>
@@ -416,7 +422,7 @@
                   <Insets left="692.0" />
                </GridPane.margin>
             </ImageView>
-            <ImageView fitHeight="45.0" fitWidth="45.0" layoutX="505.0" layoutY="70.0">
+            <ImageView fx:id="imgUndefinedPasswd" fitHeight="45.0" fitWidth="45.0" layoutX="505.0" layoutY="70.0" visible="false">
                <image>
                   <Image url="@images/UndefinedIcon.png" />
                </image>

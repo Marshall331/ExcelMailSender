@@ -15,6 +15,8 @@ import application.tools.FileReader;
 import application.tools.MailSender;
 import application.tools.StyleManager;
 import javafx.animation.RotateTransition;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -46,7 +48,13 @@ public class ConfigurationController {
     private TextArea txtHost;
 
     @FXML
+    private ImageView imgUndefinedHost;
+
+    @FXML
     private TextArea txtPort;
+
+    @FXML
+    private ImageView imgUndefinedPort;
 
     @FXML
     private CheckBox cbAuth;
@@ -58,7 +66,13 @@ public class ConfigurationController {
     private TextArea txtMail;
 
     @FXML
+    private ImageView imgUndefinedMail;
+
+    @FXML
     private TextArea txtPassword;
+
+    @FXML
+    private ImageView imgUndefinedPasswd;
 
     @FXML
     private Button buttConnectionTest;
@@ -107,7 +121,12 @@ public class ConfigurationController {
     private Task<Void> sendingTask;
     private boolean isCurrentlyConnected;
 
-    private BooleanProperty minConfCompleted = new SimpleBooleanProperty();
+    private BooleanProperty hostIsFilled = new SimpleBooleanProperty();
+    private BooleanProperty portIsFilled = new SimpleBooleanProperty();
+    private BooleanProperty mailIsFilled = new SimpleBooleanProperty();
+    private BooleanProperty passwdIsFilled = new SimpleBooleanProperty();
+
+    private BooleanProperty minConfIsFilled = new SimpleBooleanProperty();
 
     public void initContext(Stage _primaryStage, Configuration _mailAutoApp) {
         this.mailAutoApp = _mailAutoApp;
@@ -115,9 +134,23 @@ public class ConfigurationController {
         oldConfiguration = ConfigurationManager.loadConf();
         newConfiguration = oldConfiguration;
 
+        this.initMinConfIsFilledObserver();
         this.initViewElements();
         this.initTestConnectionTask();
         this.updateViewElements();
+    }
+
+    private void initMinConfIsFilledObserver() {
+        BooleanBinding combinedBinding = Bindings.and(hostIsFilled, portIsFilled);
+        combinedBinding = Bindings.and(combinedBinding, mailIsFilled);
+        combinedBinding = Bindings.and(combinedBinding, passwdIsFilled);
+
+        minConfIsFilled.bind(combinedBinding);
+
+        hostIsFilled.set(true);
+        portIsFilled.set(true);
+        mailIsFilled.set(true);
+        passwdIsFilled.set(true);
     }
 
     public void displayDialog() {
@@ -135,41 +168,9 @@ public class ConfigurationController {
         this.tooltipTestExcelFile.setShowDelay(Duration.ZERO);
         Tooltip.install(this.buttExcelFileTest, tooltipTestExcelFile);
 
-        this.checkMinConfIsSet();
         this.initListeners();
         this.initFileChoosers();
         this.setElementsByConf();
-    }
-
-    private void checkMinConfIsSet() {
-        if (this.txtHost.getText().trim().isEmpty()) {
-            // StyleManager.addTxtAreaStyle(this.txtHost, "red");
-            StyleManager.setUndefinedTextAreaStyle(txtHost);
-        } else {
-            // StyleManager.addTxtAreaStyle(this.txtHost, "black");
-            StyleManager.resetTextAreaStyle(this.txtHost);
-        }
-        if (this.txtPort.getText().trim().isEmpty()) {
-            // StyleManager.addTxtAreaStyle(this.txtPort, "red");
-            StyleManager.setUndefinedTextAreaStyle(txtPort);
-        } else {
-            // StyleManager.addTxtAreaStyle(this.txtPort, "black");
-            StyleManager.resetTextAreaStyle(this.txtPort);
-        }
-        if (this.txtMail.getText().isEmpty() && isMailCorrect(this.txtMail.getText().trim())) {
-            // StyleManager.addTxtAreaStyle(this.txtMail, "red");
-            StyleManager.setUndefinedTextAreaStyle(txtMail);
-        } else {
-            // StyleManager.addTxtAreaStyle(this.txtPort, "black");
-            StyleManager.resetTextAreaStyle(this.txtMail);
-        }
-        if (this.txtPassword.getText().isEmpty() && this.txtPassword.getText().length() <= 1) {
-            // StyleManager.addTxtAreaStyle(this.txtPassword, "red");
-            StyleManager.setUndefinedTextAreaStyle(txtPassword);
-        } else {
-            // StyleManager.addTxtAreaStyle(this.txtPassword, "black");
-            StyleManager.resetTextAreaStyle(this.txtPassword);
-        }
     }
 
     private void initListeners() {
@@ -183,11 +184,9 @@ public class ConfigurationController {
                 if (ServerBaseConfiguration.isSameConf(this.oldConfiguration.serverConf,
                         this.newConfiguration.serverConf)) {
                     setNewIcon("SuccesIcon.png");
-                    StyleManager.addButtonStyle(buttConnectionTest, "green", 2);
                     return true;
                 } else {
                     setNewIcon("FailedIcon.png");
-                    StyleManager.addButtonStyle(buttConnectionTest, "red", 2);
                 }
             } catch (Exception e) {
             }
@@ -198,9 +197,13 @@ public class ConfigurationController {
     private void setElementsByConf() {
         if (this.oldConfiguration.serverConf.host.length() > 0) {
             this.txtHost.setText(this.oldConfiguration.serverConf.host);
+        } else {
+            StyleManager.setUndefinedTextAreaStyle(this.txtHost);
         }
         if (this.oldConfiguration.serverConf.port > 0) {
             this.txtPort.setText("" + this.oldConfiguration.serverConf.port);
+        } else {
+            StyleManager.setUndefinedTextAreaStyle(this.txtHost);
         }
         if (this.oldConfiguration.serverConf.authentification) {
             this.cbAuth.setSelected(true);
@@ -214,9 +217,13 @@ public class ConfigurationController {
         }
         if (this.oldConfiguration.serverConf.mail.length() > 0) {
             this.txtMail.setText(this.oldConfiguration.serverConf.mail);
+        } else {
+            StyleManager.setUndefinedTextAreaStyle(this.txtMail);
         }
         if (this.oldConfiguration.serverConf.password.length() > 0) {
             this.txtPassword.setText(this.oldConfiguration.serverConf.password);
+        } else {
+            StyleManager.setUndefinedTextAreaStyle(this.txtPassword);
         }
         if (this.oldConfiguration.columnIndex > 0) {
             this.txtColumnIndex.setText("" + this.oldConfiguration.columnIndex);
@@ -267,25 +274,20 @@ public class ConfigurationController {
         this.sendingTask.setOnSucceeded(e -> {
             loadingIconAnimation.stop();
             if (isCurrentlyConnected) {
-                // this.minConfCompleted = true;
-                minConfCompleted.setValue(true);
                 this.newConfiguration.isConfOk = true;
                 this.setNewIcon("SuccesIcon.png");
-                StyleManager.addButtonStyle(buttConnectionTest, "green", 2);
                 AlertUtilities.showAlert(primaryStage, "Connexion établie.",
                         "Connexion réussie !", "La connexion au service de messagerie a bien été établie !",
                         AlertType.INFORMATION);
             } else {
                 this.newConfiguration.isConfOk = false;
                 this.setNewIcon("FailedIcon.png");
-                StyleManager.addButtonStyle(buttConnectionTest, "red", 2);
                 AlertUtilities.showAlert(primaryStage, "Echec de la connexion.", "Echec de la connexion !",
                         "Merci de saisir les bon paramètres de votre messagerie.", AlertType.ERROR);
             }
         });
         this.sendingTask.setOnFailed(e -> {
             loadingIconAnimation.stop();
-            StyleManager.addButtonStyle(buttConnectionTest, "red", 2);
             this.setNewIcon("FailedIcon.png");
             Animations.stopLoadingAnimation(loadingIcon, this.loadingIconAnimation);
             AlertUtilities.showAlert(primaryStage, "Connexion établie.",
@@ -296,7 +298,6 @@ public class ConfigurationController {
             loadingIconAnimation.stop();
         });
         this.sendingTask.setOnRunning(e -> {
-            StyleManager.addButtonStyle(buttConnectionTest, "black", 2.5);
             this.setNewIcon("LoadingIcon.jpg");
             this.loadingIconAnimation = Animations.startLoadingAnimation(this.loadingIcon);
         });
@@ -308,14 +309,15 @@ public class ConfigurationController {
             AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.", null,
                     AlertType.INFORMATION);
         } else {
-            if (this.minConfCompleted.getValue()) {
+            if (this.minConfIsFilled.getValue()) {
                 this.initTestConnectionTask();
                 new Thread(sendingTask).start();
+            } else {
+                AlertUtilities.showAlert(primaryStage, "Opération impossible.",
+                        "Impossible de lancer le test de connexion.",
+                        "Merci de compléter tous les champs requis pour le test !\n(en rouge)",
+                        AlertType.INFORMATION);
             }
-            AlertUtilities.showAlert(primaryStage, "Opération impossible.",
-                    "Impossible de lancer le test de connexion.",
-                    "Merci de compléter tous les champs requis pour le test !\n(en rouge)",
-                    AlertType.INFORMATION);
         }
     }
 
@@ -359,25 +361,6 @@ public class ConfigurationController {
     }
 
     private void saveNewConf() {
-        // int port = 0;
-        // int columnIndex = 0;
-        // int lineStart = 0;
-        // int lineEnd = 0;
-        // try {
-        // port = Integer.valueOf(this.txtPort.getText().trim());
-        // columnIndex = Integer.valueOf(this.txtColumnIndex.getText().trim());
-        // lineStart = Integer.valueOf(this.txtLineStartIndex.getText().trim());
-        // lineEnd = Integer.valueOf(this.txtLineEndIndex.getText().trim());
-        // } catch (Exception e) {
-        // }
-        // this.conf.setNewConf(this.txtHost.getText().trim(), port,
-        // this.cbAuth.isSelected() ? true : false, this.cbtls.isSelected() ? true :
-        // false,
-        // this.txtMail.getText().trim(), this.txtPassword.getText().trim(),
-        // this.txtPathxlsx.getText().trim(),
-        // this.txtPathpdf.getText().trim(), columnIndex, lineStart, lineEnd,
-        // this.txtMailSubject.getText(),
-        // this.txtMailContent.getText(), this.checkMinConfIsCorrect());
         ConfigurationManager.saveConf(newConfiguration);
     }
 
@@ -465,13 +448,6 @@ public class ConfigurationController {
         });
     }
 
-    private void initGmailSettings() {
-        this.txtHost.setText("smtp.gmail.com");
-        this.txtPort.setText("587");
-        this.cbAuth.setSelected(true);
-        this.cbtls.setSelected(true);
-    }
-
     private boolean isMailCorrect(String _mail) {
         final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
@@ -480,30 +456,18 @@ public class ConfigurationController {
     }
 
     private void initButtonsListeners() {
-        // this.buttStart.setOnMouseEntered(event -> {
-        // if (!this.minConfCompleted.getValue()) {
-        // StyleManager.addButtonStyle(this.buttStart, "red", 1.5);
-        // tooltipTestConnection.show(this.buttStart, 0, 0);
-        // } else {
-        // StyleManager.addButtonStyle(this.buttStart, "black", 1.5);
-        // }
-        // });
-
         buttExcelFileTest.setOnMouseEntered(event -> {
             if (this.txtPathxlsx.getText().trim().isEmpty()) {
                 if (this.txtPathxlsx.getText().length() == 0) {
 
                 }
                 tooltipTestExcelFile.show(buttExcelFileTest, event.getScreenX(), event.getScreenY());
-                StyleManager.addButtonStyle(buttExcelFileTest, "red", 2);
             } else {
-                StyleManager.addButtonStyle(buttExcelFileTest, "black", 2);
                 tooltipTestExcelFile.hide();
             }
         });
 
         this.buttExcelFileTest.setOnMouseExited(event -> {
-            StyleManager.addButtonStyle(this.buttExcelFileTest, "black", 2);
             tooltipTestConnection.hide();
         });
     }
@@ -513,16 +477,19 @@ public class ConfigurationController {
         txtHost.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 if (oldConfiguration.isConfOk) {
                     checkMinConfIsCorrect();
                 }
                 if (newValue.isEmpty() || newValue.length() < 1) {
-                    minConfCompleted.setValue(false);
+                    hostIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtHost);
+                    imgUndefinedHost.setVisible(true);
 
                 } else {
+                    hostIsFilled.setValue(true);
                     StyleManager.resetTextAreaStyle(txtHost);
+                    imgUndefinedHost.setVisible(false);
                 }
                 newConfiguration.serverConf.host = newValue;
             }
@@ -532,22 +499,26 @@ public class ConfigurationController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 newConfiguration.serverConf.port = oldConfiguration.serverConf.port;
-                newValue.trim();
+                newValue = newValue.trim();
                 if (oldConfiguration.isConfOk) {
                     checkMinConfIsCorrect();
                 }
                 try {
                     newConfiguration.serverConf.port = Integer.valueOf(newValue);
                 } catch (Exception e) {
-                    minConfCompleted.setValue(false);
+                    newConfiguration.serverConf.port = 0;
+                    portIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtPort);
+                    imgUndefinedPort.setVisible(true);
                 }
                 if (newValue.isEmpty() || newValue.length() < 1 || newConfiguration.serverConf.port == 0) {
-                    minConfCompleted.setValue(false);
+                    portIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtPort);
-
+                    imgUndefinedPort.setVisible(true);
                 } else {
+                    portIsFilled.setValue(true);
                     StyleManager.resetTextAreaStyle(txtPort);
+                    imgUndefinedPort.setVisible(false);
                 }
             }
         });
@@ -573,15 +544,18 @@ public class ConfigurationController {
         this.txtMail.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 if (oldConfiguration.isConfOk) {
                     checkMinConfIsCorrect();
                 }
                 if (newValue.isEmpty() || !isMailCorrect(newValue)) {
-                    minConfCompleted.setValue(false);
+                    mailIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtMail);
+                    imgUndefinedMail.setVisible(true);
                 } else {
+                    mailIsFilled.setValue(true);
                     StyleManager.resetTextAreaStyle(txtMail);
+                    imgUndefinedMail.setVisible(false);
                 }
                 newConfiguration.serverConf.mail = newValue;
             }
@@ -590,16 +564,18 @@ public class ConfigurationController {
         txtPassword.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 if (oldConfiguration.isConfOk) {
                     checkMinConfIsCorrect();
                 }
                 if (newValue.isEmpty() || newValue.length() < 1) {
-                    minConfCompleted.setValue(false);
+                    passwdIsFilled.setValue(false);
                     StyleManager.setUndefinedTextAreaStyle(txtPassword);
-
+                    imgUndefinedPasswd.setVisible(true);
                 } else {
+                    passwdIsFilled.setValue(true);
                     StyleManager.resetTextAreaStyle(txtPassword);
+                    imgUndefinedPasswd.setVisible(false);
                 }
                 newConfiguration.serverConf.password = newValue;
             }
@@ -608,7 +584,7 @@ public class ConfigurationController {
         txtPathxlsx.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 if (newValue.isEmpty()) {
                     StyleManager.setUndefinedTextAreaStyle(txtPathxlsx);
                 } else {
@@ -621,7 +597,7 @@ public class ConfigurationController {
         txtPathpdf.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 newConfiguration.pathFilepdf = newValue.trim();
             }
         });
@@ -629,7 +605,7 @@ public class ConfigurationController {
         txtMailSubject.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 newConfiguration.mailSubject = newValue.trim();
             }
         });
@@ -637,7 +613,7 @@ public class ConfigurationController {
         txtMailContent.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                newValue.trim();
+                newValue = newValue.trim();
                 newConfiguration.mailContent = newValue.trim();
             }
         });

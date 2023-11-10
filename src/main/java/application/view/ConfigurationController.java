@@ -14,6 +14,7 @@ import application.tools.Animations;
 import application.tools.ConfigurationManager;
 import application.tools.FileReader;
 import application.tools.MailSender;
+import application.tools.StageManagement;
 import application.tools.StyleManager;
 import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
@@ -89,7 +90,7 @@ public class ConfigurationController {
 
     @FXML
     private Button buttExcelFileTest;
-    private Tooltip tooltipTestExcelFile = new Tooltip(
+    private final Tooltip tooltipTestExcelFile = new Tooltip(
             "Permet de récupérer la valeur de la case à la colonne et ligne de début entré.");
 
     @FXML
@@ -123,7 +124,9 @@ public class ConfigurationController {
     private Button buttStart;
 
     private Task<Void> sendingTask;
-    // private boolean isCurrentlyConnected;
+
+    private FileChooser excelFile;
+    private FileChooser pdfFiles;
 
     private BooleanProperty hostIsFilled = new SimpleBooleanProperty();
     private BooleanProperty portIsFilled = new SimpleBooleanProperty();
@@ -164,9 +167,6 @@ public class ConfigurationController {
         this.primaryStage.setOnCloseRequest(e -> {
             this.doLeave();
         });
-        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
-        System.out.println("NEW : " + this.newConfiguration.isConfOk);
-        // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
         this.tooltipTestExcelFile.setShowDelay(Duration.ZERO);
         Tooltip.install(this.buttExcelFileTest, tooltipTestExcelFile);
 
@@ -181,26 +181,31 @@ public class ConfigurationController {
     }
 
     private boolean checkMinConfIsCorrect() {
-        if (this.oldConfiguration.isConfOk) {
-            try {
-                if (ServerBaseConfiguration.isSameConf(this.oldConfiguration.serverConf,
-                        this.newConfiguration.serverConf) && this.minConfIsFilled.getValue()) {
-                    this.newConfiguration.isConfOk = true;
-                    setNewIcon("SuccesIcon.png");
-                    // this.isCurrentlyConnected = true;
-                    return true;
-                } else {
+        if (this.sendingTask != null && this.sendingTask.isRunning()) {
+            AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.", null,
+                    AlertType.INFORMATION);
+        } else {
+            if (this.oldConfiguration.isConfOk) {
+                try {
+                    if (ServerBaseConfiguration.isSameConf(this.oldConfiguration.serverConf,
+                            this.newConfiguration.serverConf) && this.minConfIsFilled.getValue()) {
+                        this.newConfiguration.isConfOk = true;
+                        setNewIcon("SuccesIcon.png");
+                        // this.isCurrentlyConnected = true;
+                        return true;
+                    } else {
+                        this.newConfiguration.isConfOk = false;
+                        setNewIcon("FailedIcon.png");
+                    }
+                } catch (Exception e) {
                     this.newConfiguration.isConfOk = false;
                     setNewIcon("FailedIcon.png");
+                    // this.isCurrentlyConnected = false;
                 }
-            } catch (Exception e) {
+            } else {
                 this.newConfiguration.isConfOk = false;
                 setNewIcon("FailedIcon.png");
-                // this.isCurrentlyConnected = false;
             }
-        } else {
-            this.newConfiguration.isConfOk = false;
-            setNewIcon("FailedIcon.png");
         }
         return false;
     }
@@ -269,10 +274,12 @@ public class ConfigurationController {
             @Override
             protected Void call() throws Exception {
                 try {
+                    disableMinConfWhileTest(true);
                     newConfiguration.isConfOk = MailSender.sendingTest(newConfiguration.serverConf.mail,
                             newConfiguration.serverConf.password, newConfiguration.serverConf.host,
                             newConfiguration.serverConf.port, newConfiguration.serverConf.authentification,
                             newConfiguration.serverConf.tlsenable);
+                    disableMinConfWhileTest(false);
                 } catch (Exception e) {
                     cancel();
                 }
@@ -313,10 +320,20 @@ public class ConfigurationController {
         });
     }
 
+    private void disableMinConfWhileTest(boolean _disable) {
+        this.txtHost.setDisable(_disable);
+        this.txtPort.setDisable(_disable);
+        this.cbAuth.setDisable(_disable);
+        this.cbtls.setDisable(_disable);
+        this.txtMail.setDisable(_disable);
+        this.txtPassword.setDisable(_disable);
+    }
+
     @FXML
     private void doConnectionTest() {
         if (this.sendingTask.isRunning()) {
-            AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.", null,
+            AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.",
+                    "Merci de patientez jusqu'à la fin du test en cours.",
                     AlertType.INFORMATION);
         } else {
             if (this.minConfIsFilled.getValue()) {
@@ -435,38 +452,56 @@ public class ConfigurationController {
         }
     }
 
+    @FXML
+    private void doChooseExcelFile() {
+        StageManagement.disableItems(this.primaryStage.getScene(), true);
+        File selectedFile = excelFile.showOpenDialog(new Stage());
+        if (selectedFile != null) {
+            this.txtPathxlsx.setText(selectedFile.getAbsolutePath());
+        }
+        StageManagement.disableItems(this.primaryStage.getScene(), false);
+    }
+
+    @FXML
+    private void doChoosePdfFiles() throws InterruptedException {
+        StageManagement.disableItems(this.primaryStage.getScene(), true);
+        List<File> selectedFiles = this.pdfFiles.showOpenMultipleDialog(primaryStage);
+        if (selectedFiles != null && !selectedFiles.isEmpty()) {
+            this.newConfiguration.pathFilepdf.clear();
+            for (File file : selectedFiles) {
+                this.newConfiguration.pathFilepdf.add(file.getAbsolutePath());
+            }
+            this.txtPathpdf.setText(selectedFiles.toString());
+            this.labPDFFileCount.setText("" + this.newConfiguration.pathFilepdf.size());
+        }
+        StageManagement.disableItems(this.primaryStage.getScene(), false);
+    }
+
+    @FXML
+    private void doRemoveExcelFile() {
+        this.txtPathxlsx.setText("");
+    }
+
+    @FXML
+    private void doRemovePdflFile() {
+        this.newConfiguration.pathFilepdf.clear();
+        this.labPDFFileCount.setText("" + 0);
+        this.txtPathpdf.setText("");
+    }
+
     private void initFileChoosers() {
-        FileChooser filexlsx = new FileChooser();
-        filexlsx.setTitle("Sélectionnez le fichier xlsx");
-        filexlsx.getExtensionFilters().addAll(
+        this.excelFile = new FileChooser();
+        this.excelFile.setTitle("Sélectionnez le fichier xlsx");
+        this.excelFile.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Fichiers Excel", "*.xlsx"));
         File initialDirectory = new File(System.getProperty("user.home"));
-        filexlsx.setInitialDirectory(initialDirectory);
+        this.excelFile.setInitialDirectory(initialDirectory);
 
-        this.btnFilexlsx.setOnAction(e -> {
-            File selectedFile = filexlsx.showOpenDialog(primaryStage);
-            if (selectedFile != null) {
-                this.txtPathxlsx.setText(selectedFile.getAbsolutePath());
-            }
-        });
-
-        FileChooser filepdf = new FileChooser();
-        filepdf.setTitle("Sélectionnez les fichiers PDF");
+        this.pdfFiles = new FileChooser();
+        this.pdfFiles.setTitle("Sélectionnez les fichiers PDF");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
-        filepdf.getExtensionFilters().add(extFilter);
-        filepdf.setInitialDirectory(initialDirectory);
-
-        this.btnFilepdf.setOnAction(e -> {
-            List<File> selectedFiles = filepdf.showOpenMultipleDialog(primaryStage);
-            if (selectedFiles != null && !selectedFiles.isEmpty()) {
-                StringBuilder filesPaths = new StringBuilder();
-                for (File file : selectedFiles) {
-                    filesPaths.append(file.getAbsolutePath()).append("\n");
-                }
-                this.txtPathpdf.setText(selectedFiles.toString());
-                this.labPDFFileCount.setText("" + selectedFiles.size());
-            }
-        });
+        this.pdfFiles.getExtensionFilters().add(extFilter);
+        this.pdfFiles.setInitialDirectory(initialDirectory);
     }
 
     private boolean isMailCorrect(String _mail) {
@@ -598,14 +633,13 @@ public class ConfigurationController {
             }
         });
 
-        // txtPathxlsx.textProperty().addListener(new ChangeListener<String>() {
-        // @Override
-        // public void changed(ObservableValue<? extends String> observable, String
-        // oldValue, String newValue) {
-        // newValue = newValue.trim();
-        // newConfiguration.pathFilexlsx = newValue;
-        // }
-        // });
+        txtPathxlsx.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                newValue = newValue.trim();
+                newConfiguration.pathFilexlsx = newValue;
+            }
+        });
 
         txtColumnIndex.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -642,15 +676,6 @@ public class ConfigurationController {
                 }
             }
         });
-
-        // txtPathpdf.textProperty().addListener(new ChangeListener<String>() {
-        // @Override
-        // public void changed(ObservableValue<? extends String> observable, String
-        // oldValue, String newValue) {
-        // newValue = newValue.trim();
-        // newConfiguration.pathFilepdf = newValue.trim();
-        // }
-        // });
 
         txtMailSubject.textProperty().addListener(new ChangeListener<String>() {
             @Override

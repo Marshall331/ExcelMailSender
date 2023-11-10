@@ -41,17 +41,22 @@
 
 .connectionTestButton {
     -fx-background-radius: 15;
-    -fx-background-color: rgba(168, 90, 120, 0.927);
+    -fx-background-color: rgba(150, 207, 26, 0.837)
+}
+
+.deleteFileButton {
+    -fx-background-radius: 15;
+    -fx-background-color: rgba(19, 136, 107, 0.534)
 }
 
 .fileChooserButton {
     -fx-background-radius: 15;
-    -fx-background-color: rgba(173, 187, 19, 0.927);
+    -fx-background-color: rgba(8, 151, 139, 0.74);
 }
 
 .fileTestButton {
     -fx-background-radius: 15;
-    -fx-background-color: rgba(168, 90, 120, 0.927);
+    -fx-background-color: rgba(150, 207, 26, 0.837)
 }
 
 .startButton {

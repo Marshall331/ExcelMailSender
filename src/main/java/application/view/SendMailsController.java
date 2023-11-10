@@ -86,7 +86,7 @@ public class SendMailsController {
         this.initViewElements();
         this.initSendingTask();
 
-        sendEmails();
+        this.sendEmails();
 
     }
 

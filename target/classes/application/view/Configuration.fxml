@@ -74,7 +74,7 @@
                         <String fx:value="mainButtonOnHover" />
                      </styleClass>
                   </Button>
-                  <ImageView fx:id="loadingIcon" fitHeight="45.0" fitWidth="45.0">
+                  <ImageView fx:id="loadingIcon" fitHeight="45.0" fitWidth="45.0" visible="false">
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
@@ -86,7 +86,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="4">
                <children>
-                  <Label layoutX="20.0" layoutY="20.0" maxWidth="651.0" minWidth="144.0" prefHeight="55.0" prefWidth="216.0" text="Pièce(s) jointe(s) pdf :">
+                  <Label layoutX="20.0" layoutY="20.0" maxWidth="651.0" minWidth="144.0" prefHeight="55.0" prefWidth="395.0" text="Pièce(s) jointe(s) pdf :">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
@@ -94,14 +94,14 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Label>
-                  <Label fx:id="labPDFFileCount" alignment="CENTER" maxWidth="45.0" minWidth="45.0" prefHeight="55.0" prefWidth="45.0">
+                  <Label fx:id="labPDFFileCount" alignment="CENTER" maxWidth="45.0" minWidth="45.0" prefHeight="55.0" prefWidth="45.0" text="4">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
                      <HBox.margin>
                         <Insets right="5.0" />
                      </HBox.margin></Label>
-                  <TextArea fx:id="txtPathpdf" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="883.0" minHeight="45.0" minWidth="637.0" prefHeight="45.0" prefWidth="705.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
+                  <TextArea fx:id="txtPathpdf" disable="true" layoutX="119.0" layoutY="20.0" maxHeight="45.0" maxWidth="883.0" minHeight="45.0" minWidth="632.0" prefHeight="45.0" prefWidth="632.0" styleClass="txtArea" stylesheets="@../application.css" wrapText="true">
                      <HBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
@@ -109,13 +109,35 @@
                         <Font size="17.0" />
                      </font>
                   </TextArea>
-                  <Button fx:id="btnFilepdf" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
+                  <Button maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemovePdflFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
+                     <graphic>
+                        <ImageView fitHeight="35.0" fitWidth="35.0">
+                           <image>
+                              <Image url="@images/deleteFileIcon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                     <styleClass>
+                        <String fx:value="deleteFileButton" />
+                        <String fx:value="SecondaryButtonOnHover" />
+                        <String fx:value="SecondaryButtonOnClick" />
+                     </styleClass>
+                  </Button>
+                  <Button fx:id="btnFilepdf" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" onAction="#doChoosePdfFiles" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets left="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="fileChooserButton" />
+                        <String fx:value="SecondaryButtonOnHover" />
+                        <String fx:value="SecondaryButtonOnClick" />
+                     </styleClass>
                      <graphic>
                         <ImageView fitHeight="35.0" fitWidth="35.0" translateX="-5.0">
                            <image>
@@ -123,11 +145,6 @@
                            </image>
                         </ImageView>
                      </graphic>
-                     <styleClass>
-                        <String fx:value="fileChooserButton" />
-                        <String fx:value="SecondaryButtonOnHover" />
-                        <String fx:value="SecondaryButtonOnClick" />
-                     </styleClass>
                   </Button>
                </children>
             </HBox>
@@ -304,7 +321,24 @@
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button fx:id="btnFilexlsx" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
+                  <Button maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemoveExcelFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
+                     <graphic>
+                        <ImageView fitHeight="35.0" fitWidth="35.0">
+                           <image>
+                              <Image url="@images/deleteFileIcon.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                     <styleClass>
+                        <String fx:value="deleteFileButton" />
+                        <String fx:value="SecondaryButtonOnHover" />
+                        <String fx:value="SecondaryButtonOnClick" />
+                     </styleClass>
+                  </Button>
+                  <Button fx:id="btnFilexlsx" maxHeight="45.0" maxWidth="215.0" minHeight="45.0" minWidth="215.0" mnemonicParsing="false" onAction="#doChooseExcelFile" prefHeight="45.0" prefWidth="215.0" stylesheets="@../application.css" text="Ajouter un fichier">
                      <font>
                         <Font name="Arial Bold" size="17.0" />
                      </font>
@@ -328,9 +362,9 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="60.0" prefWidth="1200.0" GridPane.rowIndex="3">
                <children>
-                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="186.0" minHeight="45.0" minWidth="186.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="186.0" stylesheets="@../application.css" text="Tester le fichier">
+                  <Button fx:id="buttExcelFileTest" maxHeight="45.0" maxWidth="186.0" minHeight="45.0" minWidth="156.0" mnemonicParsing="false" onAction="#doGetCellValue" prefHeight="45.0" prefWidth="156.0" stylesheets="@../application.css" text="Tester le fichier">
                      <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font name="System Bold" size="17.0" />
                      </font>
                      <HBox.margin>
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />

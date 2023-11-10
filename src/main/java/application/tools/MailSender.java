@@ -83,6 +83,9 @@ public class MailSender {
 
             MimeBodyPart attachmentPart = new MimeBodyPart();
 
+            for (String path : _conf.pathFilepdf) {
+                
+            }
             String file = _conf.pathFilepdf.pop();
             String fileName = Paths.get(file).getFileName().toString();
             DataSource source = new FileDataSource(file);

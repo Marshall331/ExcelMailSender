@@ -257,7 +257,7 @@ public class SendMailsController {
             res = "\nPièce jointe introuvable.\nLa pièce jointe spécifié au chemin suivant n'a pas été trouvée, veuillez réessayer.\n"
                     + _filePath + "Code d'erreur : ";
         } catch (IOException e) {
-            res = "Erreur lors de la lecture de la pièce jointe.\nQuelque chose d'anormale s'est produit durant la vérification de la pièce jointe suivante, veuillez réessayer.\n"
+            res = "\nErreur lors de la lecture de la pièce jointe.\nQuelque chose d'anormale s'est produit durant la vérification de la pièce jointe suivante, veuillez réessayer.\n"
                     + _filePath + "\nCode d'erreur : " + e;
         } catch (Exception e) {
             res = "\nErreur lors de la lecture de la pièce jointe.\nQuelque chose d'anormale s'est produit durant la vérification de la pièce jointe suivante, veuillez réessayer.\n"
@@ -279,11 +279,17 @@ public class SendMailsController {
             AlertUtilities.showAlert(primaryStage, "Erreur.", "Des envois sont déjà en cours, veuillez attendre.", null,
                     AlertType.INFORMATION);
         } else {
-            boolean allOk = true;
+            boolean start = true;
+            String res = "";
             for (String path : this.conf.pathFilepdf) {
-                allOk = this.checkAttachmentIsOk(path);
+                res += this.checkAttachmentIsOk(path);
             }
-            if (allOk) {
+            if (!res.equals("")) {
+                start = AlertUtilities.confirmYesCancel(primaryStage, "Erreur.",
+                        "Plusieurs problèmes rencontrés sur les pièces jointes, envoyer les mails quand même ?", res,
+                        AlertType.INFORMATION);
+            }
+            if (start) {
                 if (this.listLeft.size() == 0) {
                     this.sendEmails();
                 }

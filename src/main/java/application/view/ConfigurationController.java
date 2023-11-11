@@ -474,6 +474,7 @@ public class ConfigurationController {
             this.txtPathpdf.setText(selectedFiles.toString());
             this.labPDFFileCount.setText("" + this.newConfiguration.pathFilepdf.size());
         }
+        
         StageManagement.disableItems(this.primaryStage.getScene(), false);
     }
 

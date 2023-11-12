@@ -20,9 +20,7 @@ import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -288,9 +286,6 @@ public class ConfigurationController {
         };
         this.sendingTask.setOnSucceeded(e -> {
             loadingIconAnimation.stop();
-            System.out.println("OLD : " + this.oldConfiguration.isConfOk);
-            System.out.println("NEW : " + this.newConfiguration.isConfOk);
-            // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
             if (newConfiguration.isConfOk) {
                 this.saveConf();
                 this.setNewIcon("SuccesIcon.png");
@@ -352,8 +347,6 @@ public class ConfigurationController {
     @FXML
     private void doStart() {
         this.checkMinConfIsCorrect();
-        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
-        System.out.println("NEW : " + this.newConfiguration.isConfOk);
         if (this.sendingTask.isRunning()) {
             AlertUtilities.showAlert(primaryStage, "Opération impossible.",
                     "Connexion au serveur de messagerie en cours.",
@@ -378,9 +371,6 @@ public class ConfigurationController {
             this.sendingTask.cancel(true);
         }
         this.saveConf();
-        System.out.println("OLD : " + this.oldConfiguration.isConfOk);
-        System.out.println("NEW : " + this.newConfiguration.isConfOk);
-        // System.out.println("CONNECTED : " + this.isCurrentlyConnected);
         this.primaryStage.close();
         System.exit(0);
     }

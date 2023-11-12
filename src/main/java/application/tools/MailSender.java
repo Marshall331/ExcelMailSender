@@ -81,20 +81,19 @@ public class MailSender {
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(_conf.mailContent);
 
-            MimeBodyPart attachmentPart = new MimeBodyPart();
-
-            for (String path : _conf.pathFilepdf) {
-                
-            }
-            String file = _conf.pathFilepdf.pop();
-            String fileName = Paths.get(file).getFileName().toString();
-            DataSource source = new FileDataSource(file);
-            attachmentPart.setDataHandler(new DataHandler(source));
-            attachmentPart.setFileName(fileName);
-
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(textPart);
-            multipart.addBodyPart(attachmentPart);
+
+            // if (_conf.pathFilepdf.size() > 0) {
+            for (String file : _conf.pathFilepdf) {
+                String fileName = Paths.get(file).getFileName().toString();
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(file);
+                attachmentPart.setDataHandler(new DataHandler(source));
+                attachmentPart.setFileName(fileName);
+                multipart.addBodyPart(attachmentPart);
+            }
+            // }
 
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("vqlcaniqtlse@hotmail.com"));

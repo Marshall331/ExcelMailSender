@@ -9,9 +9,6 @@ import java.util.regex.Pattern;
 import application.control.Configuration;
 import application.control.SendMails;
 import application.tools.AlertUtilities;
-import application.tools.SaveManagement;
-import application.tools.FileReader;
-import application.tools.MailSender;
 import application.tools.StageManagement;
 import application.visualEffects.Animations;
 import application.visualEffects.Style;
@@ -36,102 +33,117 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.ConfigurationSave;
+import model.FileReader;
+import model.MailSender;
+import model.SaveManagement;
 import model.ServerBaseConfiguration;
 
+/**
+ * Controller class managing the configuration view.
+ */
 public class ConfigurationController {
 
-    Configuration confView;
+    // Reference to the Configuration view
+    private Configuration confView;
+
+    // Reference to the primary stage
     private Stage primaryStage;
-    ConfigurationSave oldConfiguration;
-    ConfigurationSave newConfiguration;
+
+    // Configuration saves
+    private ConfigurationSave oldConfiguration;
+    private ConfigurationSave newConfiguration;
+
+    // FXML elements:
+    @FXML
+    private TextArea txtHost; // TextArea for entering the email host.
 
     @FXML
-    private TextArea txtHost;
+    private ImageView imgUndefinedHost; // ImageView to indicate an undefined host.
 
     @FXML
-    private ImageView imgUndefinedHost;
+    private TextArea txtPort; // TextArea for entering the email port.
 
     @FXML
-    private TextArea txtPort;
+    private ImageView imgUndefinedPort; // ImageView to indicate an undefined port.
 
     @FXML
-    private ImageView imgUndefinedPort;
+    private CheckBox cbAuth; // CheckBox for email authentication.
 
     @FXML
-    private CheckBox cbAuth;
+    private CheckBox cbtls; // CheckBox for enabling TLS.
 
     @FXML
-    private CheckBox cbtls;
+    private TextArea txtMail; // TextArea for entering the email address.
 
     @FXML
-    private TextArea txtMail;
+    private ImageView imgUndefinedMail; // ImageView to indicate an undefined email address.
 
     @FXML
-    private ImageView imgUndefinedMail;
+    private TextArea txtPassword; // TextArea for entering the email password.
 
     @FXML
-    private TextArea txtPassword;
+    private ImageView imgUndefinedPasswd; // ImageView to indicate an undefined password.
 
     @FXML
-    private ImageView imgUndefinedPasswd;
+    private Button buttConnectionTest; // Button to test email connection.
+    private final Tooltip tooltipTestConnection = new Tooltip("Envoi un mail de test.");
 
     @FXML
-    private Button buttConnectionTest;
-    private final Tooltip tooltipTestConnection = new Tooltip(
-            "Envoi un mail de test.");
-
-    @FXML
-    private ImageView loadingIcon;
+    private ImageView loadingIcon; // ImageView for loading icon during tasks.
     private RotateTransition loadingIconAnimation;
 
     @FXML
-    private TextArea txtPathxlsx;
+    private TextArea txtPathxlsx; // TextArea for entering the path to an Excel file.
 
     @FXML
-    private Button buttExcelFileTest;
+    private Button buttExcelFileTest; // Button to test an Excel file.
     private final Tooltip tooltipTestExcelFile = new Tooltip(
             "Permet de récupérer la valeur de la case à la colonne et ligne de début entré.");
 
     @FXML
-    private TextArea txtPathpdf;
+    private TextArea txtPathpdf; // TextArea for entering the path to a PDF file.
 
     @FXML
-    private Button buttSelectExcelFile;
+    private Button buttSelectExcelFile; // Button to select an Excel file.
 
     @FXML
-    private Button buttDeleteFile;
+    private Button buttDeleteExcelFile; // Button to delete the Excel File path.
+    @FXML
+    private Button buttDeletePDFFile; // Button to delete the PDF File path.
+    private final Tooltip tooltipDeleteFile = new Tooltip("Supprime le(s) fichier(s)");
 
     @FXML
-    private Button buttSelectPDFFile;
-    private final Tooltip tooltipDeleteFile = new Tooltip(
-            "Supprimer le(s) fichier(s)");
+    private Button buttSelectPDFFile; // Button to select a PDF file.
 
     @FXML
-    private TextArea txtColumnIndex;
+    private TextArea txtColumnIndex; // TextArea for entering the column index.
 
     @FXML
-    private TextArea txtLineStartIndex;
+    private TextArea txtLineStartIndex; // TextArea for entering the start line index.
 
     @FXML
-    private TextArea txtLineEndIndex;
+    private TextArea txtLineEndIndex; // TextArea for entering the end line index.
 
     @FXML
-    private Label labPDFFileCount;
+    private Label labPDFFileCount; // Label to display the count of PDF files.
 
     @FXML
-    private TextArea txtMailSubject;
+    private TextArea txtMailSubject; // TextArea for entering the email subject.
 
     @FXML
-    private TextArea txtMailContent;
+    private TextArea txtMailContent; // TextArea for entering the email content.
 
     @FXML
-    private Button buttStart;
+    private Button buttStart; // Button to initiate a task.
 
+    // Task for sending mails
     private Task<Void> sendingTask;
 
+    // FileChoosers for selecting files
     private FileChooser excelFile;
     private FileChooser pdfFiles;
 
+    // Boolean properties for field validations
     private BooleanProperty hostIsFilled = new SimpleBooleanProperty();
     private BooleanProperty portIsFilled = new SimpleBooleanProperty();
     private BooleanProperty mailIsFilled = new SimpleBooleanProperty();
@@ -139,60 +151,90 @@ public class ConfigurationController {
 
     private BooleanProperty minConfIsFilled = new SimpleBooleanProperty();
 
+    /**
+     * Initializes the context for the configuration view.
+     *
+     * @param _primaryStage The primary stage of the application.
+     * @param _confView     The configuration view.
+     */
     public void initContext(Stage _primaryStage, Configuration _confView) {
         this.confView = _confView;
         this.primaryStage = _primaryStage;
-        oldConfiguration = SaveManagement.loadConf();
-        newConfiguration = SaveManagement.loadConf();
+        this.oldConfiguration = SaveManagement.loadConf();
+        this.newConfiguration = SaveManagement.loadConf();
 
         this.initMinConfIsFilledObserver();
         this.initViewElements();
         this.initTestConnectionTask();
     }
 
+    /**
+     * Initialize observer for minimal configuration validation.
+     */
     private void initMinConfIsFilledObserver() {
         BooleanBinding combinedBinding = Bindings.and(hostIsFilled, portIsFilled);
         combinedBinding = Bindings.and(combinedBinding, mailIsFilled);
         combinedBinding = Bindings.and(combinedBinding, passwdIsFilled);
 
-        minConfIsFilled.bind(combinedBinding);
+        this.minConfIsFilled.bind(combinedBinding);
 
-        hostIsFilled.set(true);
-        portIsFilled.set(true);
-        mailIsFilled.set(true);
-        passwdIsFilled.set(true);
+        this.hostIsFilled.set(true);
+        this.portIsFilled.set(true);
+        this.mailIsFilled.set(true);
+        this.passwdIsFilled.set(true);
     }
 
+    /**
+     * Displays the primary stage for the configuration view.
+     */
     public void displayDialog() {
         primaryStage.show();
     }
 
+    /**
+     * Initializes the view elements and their respective functionalities.
+     */
     private void initViewElements() {
+        // Sets action on closing the primary stage
         this.primaryStage.setOnCloseRequest(e -> {
             this.doLeave();
         });
 
+        // Tooltip settings and installations
+        this.tooltipTestConnection.setStyle("-fx-font-size: 18px;");
         this.tooltipTestConnection.setShowDelay(Duration.ZERO);
-        Tooltip.install(this.buttConnectionTest, tooltipTestConnection);
+        Tooltip.install(this.buttConnectionTest, this.tooltipTestConnection);
 
+        this.tooltipDeleteFile.setStyle("-fx-font-size: 18px;");
         this.tooltipDeleteFile.setShowDelay(Duration.ZERO);
-        Tooltip.install(this.buttDeleteFile, tooltipDeleteFile);
+        Tooltip.install(this.buttDeleteExcelFile, this.tooltipDeleteFile);
+        Tooltip.install(this.buttDeletePDFFile, this.tooltipDeleteFile);
 
+        this.tooltipTestExcelFile.setStyle("-fx-font-size: 18px;");
         this.tooltipTestExcelFile.setShowDelay(Duration.ZERO);
-        Tooltip.install(this.buttExcelFileTest, tooltipTestExcelFile);
+        Tooltip.install(this.buttExcelFileTest, this.tooltipTestExcelFile);
 
+        // Initialize listeners for text areas, file choosers, and other elements
         this.initTxtAreaListeners();
         this.initFileChoosers();
         this.setElementsByConf();
     }
 
+    /**
+     * Checks if the minimum configuration is correct before proceeding.
+     *
+     * @return true if the minimum configuration is correct, false otherwise.
+     */
     private boolean checkMinConfIsCorrect() {
         if (this.sendingTask != null && this.sendingTask.isRunning()) {
-            AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.", null,
+            // Display alert for ongoing test
+            AlertUtilities.showAlert(this.primaryStage, "Error.", "A test is already in progress. Please wait.", null,
                     AlertType.INFORMATION);
         } else {
             if (this.oldConfiguration.isConfOk) {
                 try {
+                    // Check if the configuration is the same as the existing one and if minimum
+                    // configuration is filled
                     if (ServerBaseConfiguration.isSameConf(this.oldConfiguration.serverConf,
                             this.newConfiguration.serverConf) && this.minConfIsFilled.getValue()) {
                         this.newConfiguration.isConfOk = true;
@@ -214,13 +256,20 @@ public class ConfigurationController {
         return false;
     }
 
+    /**
+     * Sets the elements in the configuration view based on the existing
+     * configuration data.
+     * Also performs validations for certain fields.
+     */
     private void setElementsByConf() {
         if (this.oldConfiguration.serverConf.host.length() > 0) {
+            // Set host text if available; otherwise, set undefined style and show icon
             this.txtHost.setText(this.oldConfiguration.serverConf.host);
         } else {
             Style.setUndefinedTextAreaStyle(this.txtHost);
             imgUndefinedHost.setVisible(true);
         }
+        // Similar logic for other fields...
         if (this.oldConfiguration.serverConf.port >= 0) {
             this.txtPort.setText("" + this.oldConfiguration.serverConf.port);
         } else {
@@ -273,14 +322,21 @@ public class ConfigurationController {
         if (this.oldConfiguration.mailContent.length() > 0) {
             this.txtMailContent.setText(this.oldConfiguration.mailContent);
         }
+        // Check for correctness of minimum configuration
         this.checkMinConfIsCorrect();
     }
 
+    /**
+     * Initializes the task for testing the connection to the mail server.
+     * Manages the task's state and corresponding actions.
+     */
     private void initTestConnectionTask() {
         this.sendingTask = new Task<Void>() {
+            // Overrides the call method to execute the test connection task
             @Override
             protected Void call() throws Exception {
                 try {
+                    // Initiates the test connection with the provided mail server configurations
                     disableMinConfWhileTest(true);
                     newConfiguration.isConfOk = MailSender.sendingTest(newConfiguration.serverConf.mail,
                             newConfiguration.serverConf.password, newConfiguration.serverConf.host,
@@ -293,38 +349,50 @@ public class ConfigurationController {
                 return null;
             }
         };
+        // Handles task success scenario
         this.sendingTask.setOnSucceeded(e -> {
-            loadingIconAnimation.stop();
-            if (newConfiguration.isConfOk) {
+            // Stops loading animation and displays appropriate alerts based on the
+            // connection status
+            this.loadingIconAnimation.stop();
+            if (this.newConfiguration.isConfOk) {
                 this.saveConf();
                 this.setNewIcon("SuccesIcon.png");
-                AlertUtilities.showAlert(primaryStage, "Connexion établie.",
-                        "Connexion réussie !", "La connexion au service de messagerie a bien été établie !",
+                AlertUtilities.showAlert(this.primaryStage, "Connection established.",
+                        "Connection successful!", "Connection to the mail service has been established.",
                         AlertType.INFORMATION);
             } else {
                 this.setNewIcon("FailedIcon.png");
-                AlertUtilities.showAlert(primaryStage, "Echec de la connexion.", "Echec de la connexion !",
-                        "Merci de saisir les bon paramètres de votre messagerie.", AlertType.ERROR);
+                AlertUtilities.showAlert(this.primaryStage, "Connection failed.", "Connection failed!",
+                        "Please enter the correct parameters for your mail server.", AlertType.ERROR);
             }
         });
+        // Handles task failure scenario
         this.sendingTask.setOnFailed(e -> {
-            loadingIconAnimation.stop();
+            this.loadingIconAnimation.stop();
             this.setNewIcon("FailedIcon.png");
-            Animations.stopLoadingAnimation(loadingIcon, this.loadingIconAnimation);
-            AlertUtilities.showAlert(primaryStage, "Connexion établie.",
-                    "Connexion réussie !", "La connexion au service de messagerie a bien été établie !",
+            Animations.stopLoadingAnimation(this.loadingIcon, this.loadingIconAnimation);
+            AlertUtilities.showAlert(this.primaryStage, "Connection established.",
+                    "Connection successful!", "Connection to the mail service has been established.",
                     AlertType.INFORMATION);
         });
+        // Handles task cancellation
         this.sendingTask.setOnCancelled(e -> {
-            loadingIconAnimation.stop();
+            this.loadingIconAnimation.stop();
         });
+        // Sets up actions when the task is running
         this.sendingTask.setOnRunning(e -> {
             this.setNewIcon("LoadingIcon.jpg");
             this.loadingIconAnimation = Animations.startLoadingAnimation(this.loadingIcon);
         });
     }
 
+    /**
+     * Disables specified elements during the test connection process.
+     *
+     * @param _disable Boolean value to enable or disable elements.
+     */
     private void disableMinConfWhileTest(boolean _disable) {
+        // Disables elements during test connection
         this.txtHost.setDisable(_disable);
         this.txtPort.setDisable(_disable);
         this.cbAuth.setDisable(_disable);
@@ -333,48 +401,69 @@ public class ConfigurationController {
         this.txtPassword.setDisable(_disable);
     }
 
+    /**
+     * Initiates the process of testing the connection to the mail server.
+     * Handles scenarios based on ongoing or incomplete tests.
+     */
     @FXML
     private void doConnectionTest() {
         if (this.sendingTask.isRunning()) {
-            AlertUtilities.showAlert(primaryStage, "Erreur.", "Un test est déjà en cours, veuillez attendre.",
-                    "Merci de patientez jusqu'à la fin du test en cours.",
-                    AlertType.INFORMATION);
+            // Displays an alert if a test is already in progress
+            AlertUtilities.showAlert(this.primaryStage, "Error.", "A test is already in progress. Please wait.",
+                    "Please wait until the ongoing test completes.", AlertType.INFORMATION);
         } else {
             if (this.minConfIsFilled.getValue()) {
+                // Initiates test connection task if minimum configuration requirements are met
                 this.initTestConnectionTask();
-                new Thread(sendingTask).start();
+                new Thread(this.sendingTask).start();
                 this.saveConf();
             } else {
-                AlertUtilities.showAlert(primaryStage, "Opération impossible.",
-                        "Impossible de lancer le test de connexion.",
-                        "Merci de compléter tous les champs requis pour le test !\n(en rouge)",
+                // Displays an alert if required fields for the test are incomplete
+                AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
+                        "Cannot initiate connection test.",
+                        "Please fill in all the required fields for the test! (marked in red)",
                         AlertType.INFORMATION);
             }
         }
     }
 
+    /**
+     * Initiates the process to start mail transmission.
+     * Checks minimum configuration correctness and alerts if the connection test is
+     * ongoing.
+     */
     @FXML
     private void doStart() {
         this.checkMinConfIsCorrect();
         if (this.sendingTask.isRunning()) {
-            AlertUtilities.showAlert(primaryStage, "Opération impossible.",
-                    "Connexion au serveur de messagerie en cours.",
-                    "Le test de connexion au serveur est en cours, veuillez patientez.",
+            // Displays an alert if a connection test is in progress during mail
+            // transmission start
+            AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
+                    "Connecting to the mail server.",
+                    "The connection test to the server is in progress. Please wait.",
                     AlertType.INFORMATION);
         } else {
             if (this.newConfiguration.isConfOk) {
+                // Saves configuration and initiates sending mails upon successful connection
+                // test
                 this.saveConf();
                 SendMails sendMails = new SendMails(primaryStage);
                 sendMails.showStage();
             } else {
-                AlertUtilities.showAlert(primaryStage, "Opération impossible.",
-                        "Veuillez tester la connextion au serveur de messagerie d'abord !",
-                        "Merci d'effectuer le test de connexion au serveur de messagerie avant !",
+                // Displays an alert if the connection test hasn't been performed before mail
+                // transmission
+                AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
+                        "Please test the connection to the mail server first!",
+                        "Please perform the connection test to the mail server first!",
                         AlertType.ERROR);
             }
         }
     }
 
+    /**
+     * Performs necessary actions upon exiting the configuration view.
+     * Cancels ongoing tasks, saves configuration, and closes the application.
+     */
     @FXML
     private void doLeave() {
         if (this.sendingTask.isRunning()) {
@@ -385,21 +474,36 @@ public class ConfigurationController {
         System.exit(0);
     }
 
+    /**
+     * Resets the configuration to default settings after user confirmation.
+     * Initiates a new configuration view if the user confirms the reset action.
+     */
     @FXML
     private void doReset() {
-        if (AlertUtilities.confirmYesCancel(primaryStage, "Réinitialiser ?",
-                "Voulez vous vraiment réinitialiser la configuration ?", null, AlertType.CONFIRMATION)) {
+        if (AlertUtilities.confirmYesCancel(this.primaryStage, "Reset?",
+                "Do you really want to reset the configuration?", null, AlertType.CONFIRMATION)) {
             this.newConfiguration = new ConfigurationSave();
             this.confView = new Configuration();
             this.confView.start(this.primaryStage);
         }
     }
 
+    /**
+     * Saves the updated configuration data.
+     * Loads the saved configuration for further use.
+     */
     private void saveConf() {
-        SaveManagement.saveConf(newConfiguration);
+        SaveManagement.saveConf(this.newConfiguration);
         this.oldConfiguration = SaveManagement.loadConf();
     }
 
+    /**
+     * Sets a new icon for the loading icon element based on the provided image
+     * name.
+     * Updates the image and makes the loading icon visible.
+     *
+     * @param _imgName Name of the image file to be displayed.
+     */
     private void setNewIcon(String _imgName) {
         this.loadingIcon.setRotate(0);
         String imagePath = "/application/view/images/" + _imgName;
@@ -409,10 +513,16 @@ public class ConfigurationController {
         this.loadingIcon.setVisible(true);
     }
 
+    /**
+     * Retrieves a cell value from the specified Excel file based on provided column
+     * and line indices.
+     * Shows alerts for various scenarios such as empty file path, missing Excel
+     * file, or incorrect indices.
+     */
     @FXML
     private void doGetCellValue() {
         if (this.txtPathxlsx.getText().trim().isEmpty()) {
-            AlertUtilities.showAlert(primaryStage, "Opération échoué.", "Aucun fichier sélectionné.",
+            AlertUtilities.showAlert(this.primaryStage, "Opération échoué.", "Aucun fichier sélectionné.",
                     "Merci de sélectionner un fichier avant de procéder au test.", AlertType.INFORMATION);
         } else {
             try {
@@ -421,30 +531,31 @@ public class ConfigurationController {
                         Integer.valueOf(this.txtLineStartIndex.getText().trim()));
 
                 if (value.equals("")) {
-                    AlertUtilities.showAlert(primaryStage, "Résultat vide.", "La valeur retournée est vide.",
+                    AlertUtilities.showAlert(this.primaryStage, "Résultat vide.", "La valeur retournée est vide.",
                             "Assurez vous d'avoir correctement choisi la colonne et la ligne.", AlertType.INFORMATION);
                 } else {
-                    AlertUtilities.showAlert(primaryStage, "Résultat trouvé.", "La valeur retournée est : " + value,
+                    AlertUtilities.showAlert(this.primaryStage, "Résultat trouvé.",
+                            "La valeur retournée est : " + value,
                             null,
                             AlertType.INFORMATION);
                 }
             } catch (FileNotFoundException e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Fichier Excel introuvable",
+                AlertUtilities.showAlert(this.primaryStage, "Erreur", "Fichier Excel introuvable",
                         "Le fichier Excel spécifié n'a pas été trouvé, merci de réessayer avec le bon fichier .xlsx.\nCode d'erreur : "
                                 + e,
                         AlertType.ERROR);
             } catch (NumberFormatException e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Numéro de colonne ou de ligne incorrect !",
+                AlertUtilities.showAlert(this.primaryStage, "Erreur", "Numéro de colonne ou de ligne incorrect !",
                         "Merci de vérifier le bon numéro de colonne et de ligne de la valeur à récupérer.\nCode d'erreur : "
                                 + e,
                         AlertType.ERROR);
             } catch (IOException e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Erreur lors de la lecture du fichier Excel",
+                AlertUtilities.showAlert(this.primaryStage, "Erreur", "Erreur lors de la lecture du fichier Excel",
                         "Quelque chose d'anormale s'est produit durant la lecture du fichier, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
                                 + e,
                         AlertType.ERROR);
             } catch (Exception e) {
-                AlertUtilities.showAlert(primaryStage, "Erreur", "Une erreur inattendue s'est produite",
+                AlertUtilities.showAlert(this.primaryStage, "Erreur", "Une erreur inattendue s'est produite",
                         "\"Quelque chose d'anormale s'est produit, merci de réessayer en vérifiant le type du fichier et le numéro de colonne / ligne saisi.\nCode d'erreur : "
                                 + e,
                         AlertType.ERROR);
@@ -452,6 +563,10 @@ public class ConfigurationController {
         }
     }
 
+    /**
+     * Allows the user to choose an Excel file and updates the corresponding text
+     * field with the file path.
+     */
     @FXML
     private void doChooseExcelFile() {
         StageManagement.disableItems(this.primaryStage.getScene(), true);
@@ -462,10 +577,13 @@ public class ConfigurationController {
         StageManagement.disableItems(this.primaryStage.getScene(), false);
     }
 
+    /**
+     * Allows the user to choose multiple PDF files and updates the UI accordingly.
+     */
     @FXML
     private void doChoosePdfFiles() throws InterruptedException {
         StageManagement.disableItems(this.primaryStage.getScene(), true);
-        List<File> selectedFiles = this.pdfFiles.showOpenMultipleDialog(primaryStage);
+        List<File> selectedFiles = this.pdfFiles.showOpenMultipleDialog(this.primaryStage);
         if (selectedFiles != null && !selectedFiles.isEmpty()) {
             this.newConfiguration.pathFilepdf.clear();
             for (File file : selectedFiles) {
@@ -478,11 +596,17 @@ public class ConfigurationController {
         StageManagement.disableItems(this.primaryStage.getScene(), false);
     }
 
+    /**
+     * Removes the selected Excel file path from the text field.
+     */
     @FXML
     private void doRemoveExcelFile() {
         this.txtPathxlsx.setText("");
     }
 
+    /**
+     * Removes all selected PDF files and clears the corresponding text field.
+     */
     @FXML
     private void doRemovePdflFile() {
         this.newConfiguration.pathFilepdf.clear();
@@ -490,6 +614,10 @@ public class ConfigurationController {
         this.txtPathpdf.setText("");
     }
 
+    /**
+     * Initializes the file choosers for Excel and PDF files with specific filters
+     * and initial directories.
+     */
     private void initFileChoosers() {
         this.excelFile = new FileChooser();
         this.excelFile.setTitle("Sélectionnez le fichier xlsx");
@@ -505,6 +633,13 @@ public class ConfigurationController {
         this.pdfFiles.setInitialDirectory(initialDirectory);
     }
 
+    /**
+     * Checks if the given email address matches a specified pattern.
+     * 
+     * @param email The email address to be validated.
+     * @return {@code true} if the email matches the specified pattern, otherwise
+     *         {@code false}.
+     */
     private boolean isMailCorrect(String _mail) {
         final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
@@ -512,6 +647,14 @@ public class ConfigurationController {
         return matcher.matches();
     }
 
+    /**
+     * Initializes listeners for various text areas in the configuration view.
+     * This method listens for changes in different text areas and updates the
+     * corresponding
+     * properties in the configuration object ('newConfiguration').
+     * It validates input data, checks email formats, and ensures fields are
+     * properly filled.
+     */
     private void initTxtAreaListeners() {
         txtHost.textProperty().addListener(new ChangeListener<String>() {
             @Override

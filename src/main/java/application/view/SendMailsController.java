@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -15,11 +14,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import application.control.Configuration;
 import application.tools.AlertUtilities;
-import application.tools.SaveManagement;
-import application.tools.MailSender;
 import application.visualEffects.Animations;
 import javafx.animation.RotateTransition;
 import javafx.application.Platform;
@@ -34,48 +30,70 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import model.ConfigurationSave;
+import model.MailSender;
+import model.SaveManagement;
 
+/**
+ * Controller class handling the sending of emails and managing UI elements for
+ * sending emails.
+ */
 public class SendMailsController {
 
-    private Stage primaryStage;
-    private ConfigurationSave conf;
+    // Fields:
+    private Stage primaryStage; // The primary stage of the application.
+    private ConfigurationSave conf; // The configuration settings for email sending.
 
-    ObservableList<String> observableListLeft = FXCollections.observableArrayList();
+    // Observable lists to track emails.
+    private ObservableList<String> observableListLeft = FXCollections.observableArrayList();
+    private ObservableList<String> observableListDone = FXCollections.observableArrayList();
 
-    ObservableList<String> observableListDone = FXCollections.observableArrayList();
+    // Regular expression for email validation
+    private final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+    private final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
+    // Stacks to store email lists.
     private Stack<String> listLeft = new Stack<>();
     private Stack<String> listDone = new Stack<>();
 
-    private Task<Void> sendingTask;
+    private Task<Void> sendingTask; // Task responsible for sending emails.
 
-    private boolean isAllEmpty = true;
+    private boolean isAllEmpty = true; // Flag indicating if all email lists are empty.
+
+    // FXML elements:
+    @FXML
+    private ImageView loadingIcon; // Icon representing the loading state.
+
+    private RotateTransition loadingIconAnimation; // Animation for the loading icon.
 
     @FXML
-    private ImageView loadingIcon;
-    private RotateTransition loadingIconAnimation;
+    private ListView<String> listViewLeft; // ListView for emails pending to be sent.
 
     @FXML
-    private ListView<String> listViewLeft;
+    private ListView<String> listViewDone; // ListView for emails that have been sent.
 
     @FXML
-    private ListView<String> listViewDone;
+    private Label labCurrent; // Label displaying the currently processing email.
 
     @FXML
-    private Label labCurrent;
+    private Label labNext; // Label displaying the next email to be processed.
 
     @FXML
-    private Label labNext;
+    private Label labLeft; // Label displaying the number of emails left to be processed.
 
     @FXML
-    private Label labLeft;
+    private Button butStart; // Button to start the email sending process.
 
     @FXML
-    private Button butStart;
+    private Button butStop; // Button to stop the email sending process.
 
-    @FXML
-    private Button butStop;
-
+    /**
+     * Initializes the controller context with the primary stage and loads the
+     * configuration.
+     * Initializes view elements, sets up the sending task, and starts sending
+     * emails.
+     * 
+     * @param primaryStage The primary stage of the application.
+     */
     public void initContext(Stage _primaryStage) {
         this.primaryStage = _primaryStage;
         this.conf = SaveManagement.loadConf();
@@ -87,6 +105,11 @@ public class SendMailsController {
 
     }
 
+    /**
+     * Initializes the UI elements such as ListViews, sets the stage's close request
+     * action,
+     * and initializes other necessary elements for the view.
+     */
     private void initViewElements() {
         this.listViewLeft.setItems(observableListLeft);
         this.listViewDone.setItems(observableListDone);
@@ -96,6 +119,11 @@ public class SendMailsController {
         });
     }
 
+    /**
+     * Updates the UI elements with the latest information from the lists of emails.
+     * Refreshes the ListView content and updates labels based on the current state
+     * of the email lists.
+     */
     private void updateViewElements() {
         this.observableListLeft.clear();
         this.observableListDone.clear();
@@ -125,9 +153,12 @@ public class SendMailsController {
             this.labCurrent.setText(this.listLeft.get(0));
             this.labLeft.setText("" + this.listLeft.size());
         }
-
     }
 
+    /**
+     * Initializes the sending task for email dispatch.
+     * The task handles sending emails from a list until it's empty or canceled.
+     */
     private void initSendingTask() {
         this.sendingTask = new Task<Void>() {
             @Override
@@ -162,14 +193,17 @@ public class SendMailsController {
         });
     }
 
+    /**
+     * Displays the primary stage associated with this email manager.
+     */
     public void displayDialog() {
         primaryStage.show();
-
     }
 
-    private final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-    private final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
-
+    /**
+     * Initiates the process of sending emails.
+     * It reads data from an Excel file to create a list of email addresses.
+     */
     private void sendEmails() {
         if (this.sendingTask.isRunning()) {
             AlertUtilities.showAlert(primaryStage, "Erreur.", "Des envois sont déjà en cours, veuillez attendre.", null,
@@ -247,6 +281,12 @@ public class SendMailsController {
         }
     }
 
+    /**
+     * Checks if an attachment file exists and is readable.
+     *
+     * @param _filePath The path of the attachment file.
+     * @return A message indicating the result of the attachment check.
+     */
     private String checkAttachmentIsOk(String _filePath) {
         String res = "";
         try (PDDocument document = PDDocument.load(new File(_filePath))) {
@@ -263,6 +303,9 @@ public class SendMailsController {
         return res;
     }
 
+    /**
+     * Stops the current email sending task if it's running.
+     */
     @FXML
     private void doStop() {
         if (sendingTask != null && sendingTask.isRunning()) {
@@ -270,6 +313,10 @@ public class SendMailsController {
         }
     }
 
+    /**
+     * Starts the email sending process if it's not already running.
+     * It checks attachment validity and initiates the sending task.
+     */
     @FXML
     private void doStart() {
         if (this.sendingTask.isRunning()) {
@@ -296,6 +343,9 @@ public class SendMailsController {
         }
     }
 
+    /**
+     * Sends emails from the list of addresses obtained from Excel data.
+     */
     private void sendEmailsFromList() {
         this.isAllEmpty = false;
         String dest = listLeft.get(0);
@@ -318,6 +368,9 @@ public class SendMailsController {
         }
     }
 
+    /**
+     * Opens the configuration window for settings.
+     */
     @FXML
     private void doConfig() {
         if (sendingTask != null && sendingTask.isRunning()) {
@@ -327,6 +380,9 @@ public class SendMailsController {
         configView.start(this.primaryStage);
     }
 
+    /**
+     * Closes the application and stops ongoing tasks.
+     */
     @FXML
     private void doLeave() {
         if (sendingTask != null && sendingTask.isRunning()) {

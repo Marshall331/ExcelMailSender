@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import application.control.Configuration;
 import application.control.SendMails;
 import application.tools.AlertUtilities;
@@ -78,6 +77,8 @@ public class ConfigurationController {
 
     @FXML
     private Button buttConnectionTest;
+    private final Tooltip tooltipTestConnection = new Tooltip(
+            "Envoi un mail de test.");
 
     @FXML
     private ImageView loadingIcon;
@@ -95,10 +96,15 @@ public class ConfigurationController {
     private TextArea txtPathpdf;
 
     @FXML
-    private Button btnFilexlsx;
+    private Button buttSelectExcelFile;
 
     @FXML
-    private Button btnFilepdf;
+    private Button buttDeleteFile;
+
+    @FXML
+    private Button buttSelectPDFFile;
+    private final Tooltip tooltipDeleteFile = new Tooltip(
+            "Supprimer le(s) fichier(s)");
 
     @FXML
     private TextArea txtColumnIndex;
@@ -165,17 +171,19 @@ public class ConfigurationController {
         this.primaryStage.setOnCloseRequest(e -> {
             this.doLeave();
         });
+
+        this.tooltipTestConnection.setShowDelay(Duration.ZERO);
+        Tooltip.install(this.buttConnectionTest, tooltipTestConnection);
+
+        this.tooltipDeleteFile.setShowDelay(Duration.ZERO);
+        Tooltip.install(this.buttDeleteFile, tooltipDeleteFile);
+
         this.tooltipTestExcelFile.setShowDelay(Duration.ZERO);
         Tooltip.install(this.buttExcelFileTest, tooltipTestExcelFile);
 
-        this.initListeners();
+        this.initTxtAreaListeners();
         this.initFileChoosers();
         this.setElementsByConf();
-    }
-
-    private void initListeners() {
-        this.initButtonsListeners();
-        this.initTxtAreaListeners();
     }
 
     private boolean checkMinConfIsCorrect() {
@@ -189,7 +197,6 @@ public class ConfigurationController {
                             this.newConfiguration.serverConf) && this.minConfIsFilled.getValue()) {
                         this.newConfiguration.isConfOk = true;
                         setNewIcon("SuccesIcon.png");
-                        // this.isCurrentlyConnected = true;
                         return true;
                     } else {
                         this.newConfiguration.isConfOk = false;
@@ -198,7 +205,6 @@ public class ConfigurationController {
                 } catch (Exception e) {
                     this.newConfiguration.isConfOk = false;
                     setNewIcon("FailedIcon.png");
-                    // this.isCurrentlyConnected = false;
                 }
             } else {
                 this.newConfiguration.isConfOk = false;
@@ -267,7 +273,6 @@ public class ConfigurationController {
         if (this.oldConfiguration.mailContent.length() > 0) {
             this.txtMailContent.setText(this.oldConfiguration.mailContent);
         }
-        // this.isCurrentlyConnected = this.oldConfiguration.isConfOk;
         this.checkMinConfIsCorrect();
     }
 
@@ -359,7 +364,8 @@ public class ConfigurationController {
         } else {
             if (this.newConfiguration.isConfOk) {
                 this.saveConf();
-                SendMails sM = new SendMails(primaryStage);
+                SendMails sendMails = new SendMails(primaryStage);
+                sendMails.showStage();
             } else {
                 AlertUtilities.showAlert(primaryStage, "Opération impossible.",
                         "Veuillez tester la connextion au serveur de messagerie d'abord !",
@@ -390,7 +396,6 @@ public class ConfigurationController {
     }
 
     private void saveConf() {
-        // this.newConfiguration.isConfOk = isCurrentlyConnected;
         SaveManagement.saveConf(newConfiguration);
         this.oldConfiguration = SaveManagement.loadConf();
     }
@@ -507,25 +512,7 @@ public class ConfigurationController {
         return matcher.matches();
     }
 
-    private void initButtonsListeners() {
-        buttExcelFileTest.setOnMouseEntered(event -> {
-            if (this.txtPathxlsx.getText().trim().isEmpty()) {
-                if (this.txtPathxlsx.getText().length() == 0) {
-
-                }
-                tooltipTestExcelFile.show(buttExcelFileTest, event.getScreenX(), event.getScreenY());
-            } else {
-                tooltipTestExcelFile.hide();
-            }
-        });
-
-        this.buttExcelFileTest.setOnMouseExited(event -> {
-            tooltipTestExcelFile.hide();
-        });
-    }
-
     private void initTxtAreaListeners() {
-
         txtHost.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {

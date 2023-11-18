@@ -109,7 +109,7 @@
                         <Font size="17.0" />
                      </font>
                   </TextArea>
-                  <Button maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemovePdflFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
+                  <Button fx:id="buttDeleteFile" maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemovePdflFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
                      <graphic>
                         <ImageView fitHeight="35.0" fitWidth="35.0">
                            <image>
@@ -321,7 +321,7 @@
                         <Insets bottom="5.0" right="10.0" top="5.0" />
                      </HBox.margin>
                   </TextArea>
-                  <Button maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemoveExcelFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
+                  <Button fx:id="buttDeleteFile" maxHeight="45.0" maxWidth="50.0" minHeight="45.0" minWidth="50.0" mnemonicParsing="false" onAction="#doRemoveExcelFile" prefHeight="45.0" prefWidth="50.0" stylesheets="@../application.css">
                      <graphic>
                         <ImageView fitHeight="35.0" fitWidth="35.0">
                            <image>

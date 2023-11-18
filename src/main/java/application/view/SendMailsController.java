@@ -17,7 +17,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import application.control.Configuration;
-import application.control.SendMails;
 import application.tools.AlertUtilities;
 import application.tools.SaveManagement;
 import application.tools.MailSender;
@@ -38,7 +37,6 @@ import model.ConfigurationSave;
 
 public class SendMailsController {
 
-    private SendMails sendsMailsView;
     private Stage primaryStage;
     private ConfigurationSave conf;
 
@@ -58,10 +56,10 @@ public class SendMailsController {
     private RotateTransition loadingIconAnimation;
 
     @FXML
-    private ListView listViewLeft;
+    private ListView<String> listViewLeft;
 
     @FXML
-    private ListView listViewDone;
+    private ListView<String> listViewDone;
 
     @FXML
     private Label labCurrent;
@@ -78,8 +76,7 @@ public class SendMailsController {
     @FXML
     private Button butStop;
 
-    public void initContext(Stage _primaryStage, SendMails _mailAutoApp) {
-        this.sendsMailsView = _mailAutoApp;
+    public void initContext(Stage _primaryStage) {
         this.primaryStage = _primaryStage;
         this.conf = SaveManagement.loadConf();
 

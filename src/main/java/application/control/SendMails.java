@@ -9,10 +9,10 @@ import javafx.stage.Stage;
 
 public class SendMails {
 
+    private SendMailsController controller;
+
     public SendMails(Stage _primaryStage) {
-
         try {
-
             FXMLLoader loader = new FXMLLoader(
                     Main.class.getResource("view/SendMails.fxml"));
             BorderPane root = loader.load();
@@ -24,14 +24,16 @@ public class SendMails {
             _primaryStage.setTitle("Envoi en cours...");
             _primaryStage.setResizable(false);
 
-            SendMailsController dbmfcViewController = loader.getController();
-            dbmfcViewController.initContext(_primaryStage, this);
-
-            dbmfcViewController.displayDialog();
+            this.controller = loader.getController();
+            this.controller.initContext(_primaryStage);
 
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public void showStage() {
+        this.controller.displayDialog();
     }
 }

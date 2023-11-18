@@ -26,12 +26,6 @@ public class MailSender {
             boolean _authentification, boolean _tlsenable) {
         final String username = _mail;
         final String password = _password;
-        // System.out.println(_mail);
-        // System.out.println(_password);
-        // System.out.println(_host);
-        // System.out.println(_port);
-        // System.out.println(_authentification);
-        // System.out.println(_tlsenable);
 
         Properties props = new Properties();
         props.put("mail.smtp.host", _host);
@@ -49,7 +43,7 @@ public class MailSender {
         try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-            message.setRecipients(javax.mail.Message.RecipientType.TO, "odr-eu@amazon.com");
+            message.setRecipients(javax.mail.Message.RecipientType.TO, username);
             message.setSubject("Exemple d'objet.");
             message.setText("Exemple de test.");
 
@@ -84,7 +78,6 @@ public class MailSender {
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(textPart);
 
-            // if (_conf.pathFilepdf.size() > 0) {
             for (String file : _conf.pathFilepdf) {
                 String fileName = Paths.get(file).getFileName().toString();
                 MimeBodyPart attachmentPart = new MimeBodyPart();
@@ -93,7 +86,6 @@ public class MailSender {
                 attachmentPart.setFileName(fileName);
                 multipart.addBodyPart(attachmentPart);
             }
-            // }
 
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("vqlcaniqtlse@hotmail.com"));

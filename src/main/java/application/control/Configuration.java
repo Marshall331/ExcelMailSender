@@ -9,10 +9,6 @@ import javafx.stage.Stage;
 
 public class Configuration extends Application {
 
-    public Configuration() {
-        // Ce constructeur est vide car tout le code d'initialisation est déplacé dans la méthode start
-    }
-
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -30,7 +26,7 @@ public class Configuration extends Application {
             controller.initContext(primaryStage, this);
             controller.displayDialog();
 
-            primaryStage.show(); // Ne pas oublier d'afficher primaryStage
+            primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -38,6 +34,6 @@ public class Configuration extends Application {
     }
 
     public static void runApp(String[] args) {
-        launch(args); // Utilisez launch pour démarrer l'application JavaFX
+        launch(args);
     }
 }

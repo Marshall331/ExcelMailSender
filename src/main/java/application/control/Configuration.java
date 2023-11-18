@@ -7,8 +7,16 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * The Configuration class extends Application and serves as the entry point for configuring the application.
+ */
 public class Configuration extends Application {
 
+    /**
+     * The start method of the Application class, initializes the configuration interface.
+     *
+     * @param primaryStage The primary stage for the application.
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -33,6 +41,11 @@ public class Configuration extends Application {
         }
     }
 
+    /**
+     * Launches the application.
+     *
+     * @param args Command line arguments.
+     */
     public static void runApp(String[] args) {
         launch(args);
     }

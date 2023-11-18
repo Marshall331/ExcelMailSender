@@ -7,14 +7,21 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * The SendMails class manages the display of the mail sending interface.
+ */
 public class SendMails {
 
     private SendMailsController controller;
 
+    /**
+     * Constructor for the SendMails class.
+     *
+     * @param _primaryStage The primary stage to display the mail sending interface.
+     */
     public SendMails(Stage _primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    Main.class.getResource("view/SendMails.fxml"));
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("view/SendMails.fxml"));
             BorderPane root = loader.load();
 
             Scene scene = new Scene(root, root.getPrefWidth() + 20, root.getPrefHeight() + 10);
@@ -33,6 +40,9 @@ public class SendMails {
         }
     }
 
+    /**
+     * Displays the mail sending interface stage.
+     */
     public void showStage() {
         this.controller.displayDialog();
     }

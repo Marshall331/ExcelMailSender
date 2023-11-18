@@ -1,38 +1,43 @@
 package application.control;
 
-import application.Main;
 import application.view.ConfigurationController;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class Configuration{
+public class Configuration extends Application {
 
-    public Configuration(Stage primaryStage) {
+    public Configuration() {
+        // Ce constructeur est vide car tout le code d'initialisation est déplacé dans la méthode start
+    }
 
+    @Override
+    public void start(Stage primaryStage) {
         try {
-
-            FXMLLoader loader = new FXMLLoader(
-                    Main.class.getResource("view/Configuration.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/view/Configuration.fxml"));
             BorderPane root = loader.load();
 
             Scene scene = new Scene(root, root.getPrefWidth() + 20, root.getPrefHeight() + 10);
-            scene.getStylesheets().add(Main.class.getResource("application.css").toExternalForm());
+            scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
 
             primaryStage.setScene(scene);
             primaryStage.setTitle("Configuration");
             primaryStage.setResizable(false);
 
-            ConfigurationController dbmfcViewController = loader.getController();
-            dbmfcViewController.initContext(primaryStage, this);
-            scene.getStylesheets().add("application.css");
+            ConfigurationController controller = loader.getController();
+            controller.initContext(primaryStage, this);
+            controller.displayDialog();
 
-            dbmfcViewController.displayDialog();
-
+            primaryStage.show(); // Ne pas oublier d'afficher primaryStage
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public static void runApp(String[] args) {
+        launch(args); // Utilisez launch pour démarrer l'application JavaFX
     }
 }

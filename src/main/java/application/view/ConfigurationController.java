@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
 import application.control.Configuration;
 import application.control.SendMails;
 import application.tools.AlertUtilities;
-import application.tools.Animations;
-import application.tools.ConfigurationManager;
+import application.tools.SaveManagement;
 import application.tools.FileReader;
 import application.tools.MailSender;
 import application.tools.StageManagement;
-import application.tools.StyleManager;
+import application.visualEffects.Animations;
+import application.visualEffects.Style;
 import javafx.animation.RotateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -41,7 +41,7 @@ import model.ServerBaseConfiguration;
 
 public class ConfigurationController {
 
-    Configuration mailAutoApp;
+    Configuration confView;
     private Stage primaryStage;
     ConfigurationSave oldConfiguration;
     ConfigurationSave newConfiguration;
@@ -133,11 +133,11 @@ public class ConfigurationController {
 
     private BooleanProperty minConfIsFilled = new SimpleBooleanProperty();
 
-    public void initContext(Stage _primaryStage, Configuration _mailAutoApp) {
-        this.mailAutoApp = _mailAutoApp;
+    public void initContext(Stage _primaryStage, Configuration _confView) {
+        this.confView = _confView;
         this.primaryStage = _primaryStage;
-        oldConfiguration = ConfigurationManager.loadConf();
-        newConfiguration = ConfigurationManager.loadConf();
+        oldConfiguration = SaveManagement.loadConf();
+        newConfiguration = SaveManagement.loadConf();
 
         this.initMinConfIsFilledObserver();
         this.initViewElements();
@@ -212,12 +212,14 @@ public class ConfigurationController {
         if (this.oldConfiguration.serverConf.host.length() > 0) {
             this.txtHost.setText(this.oldConfiguration.serverConf.host);
         } else {
-            StyleManager.setUndefinedTextAreaStyle(this.txtHost);
+            Style.setUndefinedTextAreaStyle(this.txtHost);
+            imgUndefinedHost.setVisible(true);
         }
-        if (this.oldConfiguration.serverConf.port > 0) {
+        if (this.oldConfiguration.serverConf.port >= 0) {
             this.txtPort.setText("" + this.oldConfiguration.serverConf.port);
         } else {
-            StyleManager.setUndefinedTextAreaStyle(this.txtHost);
+            Style.setUndefinedTextAreaStyle(this.txtHost);
+            imgUndefinedPort.setVisible(true);
         }
         if (this.oldConfiguration.serverConf.authentification) {
             this.cbAuth.setSelected(true);
@@ -232,12 +234,14 @@ public class ConfigurationController {
         if (this.oldConfiguration.serverConf.mail.length() > 0) {
             this.txtMail.setText(this.oldConfiguration.serverConf.mail);
         } else {
-            StyleManager.setUndefinedTextAreaStyle(this.txtMail);
+            Style.setUndefinedTextAreaStyle(this.txtMail);
+            imgUndefinedMail.setVisible(true);
         }
         if (this.oldConfiguration.serverConf.password.length() > 0) {
             this.txtPassword.setText(this.oldConfiguration.serverConf.password);
         } else {
-            StyleManager.setUndefinedTextAreaStyle(this.txtPassword);
+            Style.setUndefinedTextAreaStyle(this.txtPassword);
+            imgUndefinedPasswd.setVisible(true);
         }
         if (this.oldConfiguration.columnIndex > 0) {
             this.txtColumnIndex.setText("" + this.oldConfiguration.columnIndex);
@@ -380,14 +384,15 @@ public class ConfigurationController {
         if (AlertUtilities.confirmYesCancel(primaryStage, "Réinitialiser ?",
                 "Voulez vous vraiment réinitialiser la configuration ?", null, AlertType.CONFIRMATION)) {
             this.newConfiguration = new ConfigurationSave();
-            Configuration c = new Configuration(this.primaryStage);
+            this.confView = new Configuration();
+            this.confView.start(this.primaryStage);
         }
     }
 
     private void saveConf() {
         // this.newConfiguration.isConfOk = isCurrentlyConnected;
-        ConfigurationManager.saveConf(newConfiguration);
-        this.oldConfiguration = ConfigurationManager.loadConf();
+        SaveManagement.saveConf(newConfiguration);
+        this.oldConfiguration = SaveManagement.loadConf();
     }
 
     private void setNewIcon(String _imgName) {
@@ -464,7 +469,7 @@ public class ConfigurationController {
             this.txtPathpdf.setText(selectedFiles.toString());
             this.labPDFFileCount.setText("" + this.newConfiguration.pathFilepdf.size());
         }
-        
+
         StageManagement.disableItems(this.primaryStage.getScene(), false);
     }
 
@@ -527,12 +532,12 @@ public class ConfigurationController {
                 newValue = newValue.trim();
                 if (newValue.isEmpty() || newValue.length() < 1) {
                     hostIsFilled.setValue(false);
-                    StyleManager.setUndefinedTextAreaStyle(txtHost);
+                    Style.setUndefinedTextAreaStyle(txtHost);
                     imgUndefinedHost.setVisible(true);
 
                 } else {
                     hostIsFilled.setValue(true);
-                    StyleManager.resetTextAreaStyle(txtHost);
+                    Style.resetTextAreaStyle(txtHost);
                     imgUndefinedHost.setVisible(false);
                 }
                 newConfiguration.serverConf.host = newValue;
@@ -550,18 +555,19 @@ public class ConfigurationController {
                 try {
                     newConfiguration.serverConf.port = Integer.valueOf(newValue);
                 } catch (Exception e) {
+                    System.out.println("test");
                     newConfiguration.serverConf.port = 0;
                     portIsFilled.setValue(false);
-                    StyleManager.setUndefinedTextAreaStyle(txtPort);
+                    Style.setUndefinedTextAreaStyle(txtPort);
                     imgUndefinedPort.setVisible(true);
                 }
-                if (newValue.isEmpty() || newValue.length() < 1 || newConfiguration.serverConf.port == 0) {
+                if (newValue.isEmpty() || newValue.length() < 1 || newConfiguration.serverConf.port <= 0) {
                     portIsFilled.setValue(false);
-                    StyleManager.setUndefinedTextAreaStyle(txtPort);
+                    Style.setUndefinedTextAreaStyle(txtPort);
                     imgUndefinedPort.setVisible(true);
                 } else {
                     portIsFilled.setValue(true);
-                    StyleManager.resetTextAreaStyle(txtPort);
+                    Style.resetTextAreaStyle(txtPort);
                     imgUndefinedPort.setVisible(false);
                 }
                 if (oldConfiguration.isConfOk) {
@@ -590,11 +596,11 @@ public class ConfigurationController {
                 newValue = newValue.trim();
                 if (newValue.isEmpty() || !isMailCorrect(newValue)) {
                     mailIsFilled.setValue(false);
-                    StyleManager.setUndefinedTextAreaStyle(txtMail);
+                    Style.setUndefinedTextAreaStyle(txtMail);
                     imgUndefinedMail.setVisible(true);
                 } else {
                     mailIsFilled.setValue(true);
-                    StyleManager.resetTextAreaStyle(txtMail);
+                    Style.resetTextAreaStyle(txtMail);
                     imgUndefinedMail.setVisible(false);
                 }
                 newConfiguration.serverConf.mail = newValue;
@@ -610,11 +616,11 @@ public class ConfigurationController {
                 newValue = newValue.trim();
                 if (newValue.isEmpty() || newValue.length() < 1) {
                     passwdIsFilled.setValue(false);
-                    StyleManager.setUndefinedTextAreaStyle(txtPassword);
+                    Style.setUndefinedTextAreaStyle(txtPassword);
                     imgUndefinedPasswd.setVisible(true);
                 } else {
                     passwdIsFilled.setValue(true);
-                    StyleManager.resetTextAreaStyle(txtPassword);
+                    Style.resetTextAreaStyle(txtPassword);
                     imgUndefinedPasswd.setVisible(false);
                 }
                 newConfiguration.serverConf.password = newValue;

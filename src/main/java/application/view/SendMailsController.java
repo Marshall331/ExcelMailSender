@@ -19,9 +19,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import application.control.Configuration;
 import application.control.SendMails;
 import application.tools.AlertUtilities;
-import application.tools.Animations;
-import application.tools.ConfigurationManager;
+import application.tools.SaveManagement;
 import application.tools.MailSender;
+import application.visualEffects.Animations;
 import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -38,7 +38,7 @@ import model.ConfigurationSave;
 
 public class SendMailsController {
 
-    private SendMails mailAutoApp;
+    private SendMails sendsMailsView;
     private Stage primaryStage;
     private ConfigurationSave conf;
 
@@ -79,9 +79,9 @@ public class SendMailsController {
     private Button butStop;
 
     public void initContext(Stage _primaryStage, SendMails _mailAutoApp) {
-        this.mailAutoApp = _mailAutoApp;
+        this.sendsMailsView = _mailAutoApp;
         this.primaryStage = _primaryStage;
-        this.conf = ConfigurationManager.loadConf();
+        this.conf = SaveManagement.loadConf();
 
         this.initViewElements();
         this.initSendingTask();
@@ -326,7 +326,8 @@ public class SendMailsController {
         if (sendingTask != null && sendingTask.isRunning()) {
             sendingTask.cancel(true);
         }
-        Configuration c = new Configuration(this.primaryStage);
+        Configuration configView = new Configuration();
+        configView.start(this.primaryStage);
     }
 
     @FXML

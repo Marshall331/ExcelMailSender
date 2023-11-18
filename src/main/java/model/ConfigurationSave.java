@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.Stack;
 
-import application.tools.ConfigurationManager;
+import application.tools.SaveManagement;
 
 public class ConfigurationSave implements Serializable {
 
@@ -35,6 +35,6 @@ public class ConfigurationSave implements Serializable {
         this.mailSubject = "";
         this.mailContent = "";
 
-        ConfigurationManager.saveConf(this);
+        SaveManagement.saveConf(this);
     }
 }

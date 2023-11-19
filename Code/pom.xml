@@ -80,7 +80,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx.maven.plugin.version}</version>
                 <configuration>
-                    <mainClass>src\main\java\application\LancerApp.java</mainClass>
+                    <mainClass>src\main\java\application\Main.java</mainClass>
                 </configuration>
             </plugin>
         </plugins>

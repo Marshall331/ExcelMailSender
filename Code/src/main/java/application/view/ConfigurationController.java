@@ -228,7 +228,8 @@ public class ConfigurationController {
     private boolean checkMinConfIsCorrect() {
         if (this.sendingTask != null && this.sendingTask.isRunning()) {
             // Display alert for ongoing test
-            AlertUtilities.showAlert(this.primaryStage, "Error.", "A test is already in progress. Please wait.", null,
+            AlertUtilities.showAlert(this.primaryStage, "Erreur.", "Un test est déjà en cours. Veuillez patienter.",
+                    null,
                     AlertType.INFORMATION);
         } else {
             if (this.oldConfiguration.isConfOk) {
@@ -357,13 +358,13 @@ public class ConfigurationController {
             if (this.newConfiguration.isConfOk) {
                 this.saveConf();
                 this.setNewIcon("SuccesIcon.png");
-                AlertUtilities.showAlert(this.primaryStage, "Connection established.",
-                        "Connection successful!", "Connection to the mail service has been established.",
+                AlertUtilities.showAlert(this.primaryStage, "Connexion établie.",
+                        "Connexion réussie !", "La connexion au service de messagerie a été établie.",
                         AlertType.INFORMATION);
             } else {
                 this.setNewIcon("FailedIcon.png");
-                AlertUtilities.showAlert(this.primaryStage, "Connection failed.", "Connection failed!",
-                        "Please enter the correct parameters for your mail server.", AlertType.ERROR);
+                AlertUtilities.showAlert(this.primaryStage, "Échec de la connexion.", "Échec de la connexion !",
+                        "Veuillez saisir les paramètres corrects pour votre serveur de messagerie.", AlertType.ERROR);
             }
         });
         // Handles task failure scenario
@@ -371,9 +372,8 @@ public class ConfigurationController {
             this.loadingIconAnimation.stop();
             this.setNewIcon("FailedIcon.png");
             Animations.stopLoadingAnimation(this.loadingIcon, this.loadingIconAnimation);
-            AlertUtilities.showAlert(this.primaryStage, "Connection established.",
-                    "Connection successful!", "Connection to the mail service has been established.",
-                    AlertType.INFORMATION);
+            AlertUtilities.showAlert(this.primaryStage, "Échec de la connexion.", "Échec de la connexion !",
+                    "Veuillez saisir les paramètres corrects pour votre serveur de messagerie.", AlertType.ERROR);
         });
         // Handles task cancellation
         this.sendingTask.setOnCancelled(e -> {
@@ -409,8 +409,8 @@ public class ConfigurationController {
     private void doConnectionTest() {
         if (this.sendingTask.isRunning()) {
             // Displays an alert if a test is already in progress
-            AlertUtilities.showAlert(this.primaryStage, "Error.", "A test is already in progress. Please wait.",
-                    "Please wait until the ongoing test completes.", AlertType.INFORMATION);
+            AlertUtilities.showAlert(this.primaryStage, "Erreur.", "Un test est déjà en cours. Veuillez patienter.",
+                    "Veuillez attendre que le test en cours se termine.", AlertType.INFORMATION);
         } else {
             if (this.minConfIsFilled.getValue()) {
                 // Initiates test connection task if minimum configuration requirements are met
@@ -419,9 +419,9 @@ public class ConfigurationController {
                 this.saveConf();
             } else {
                 // Displays an alert if required fields for the test are incomplete
-                AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
-                        "Cannot initiate connection test.",
-                        "Please fill in all the required fields for the test! (marked in red)",
+                AlertUtilities.showAlert(this.primaryStage, "Opération impossible.",
+                        "Impossible d'initier le test de connexion.",
+                        "Veuillez remplir tous les champs requis pour le test ! (marqués en rouge)",
                         AlertType.INFORMATION);
             }
         }
@@ -438,9 +438,9 @@ public class ConfigurationController {
         if (this.sendingTask.isRunning()) {
             // Displays an alert if a connection test is in progress during mail
             // transmission start
-            AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
-                    "Connecting to the mail server.",
-                    "The connection test to the server is in progress. Please wait.",
+            AlertUtilities.showAlert(this.primaryStage, "Opération impossible.",
+                    "Connexion au serveur de messagerie.",
+                    "Le test de connexion au serveur est en cours. Veuillez patienter.",
                     AlertType.INFORMATION);
         } else {
             if (this.newConfiguration.isConfOk) {
@@ -452,9 +452,9 @@ public class ConfigurationController {
             } else {
                 // Displays an alert if the connection test hasn't been performed before mail
                 // transmission
-                AlertUtilities.showAlert(this.primaryStage, "Operation not possible.",
-                        "Please test the connection to the mail server first!",
-                        "Please perform the connection test to the mail server first!",
+                AlertUtilities.showAlert(this.primaryStage, "Opération impossible.",
+                        "Veuillez d'abord tester la connexion au serveur de messagerie !",
+                        "Veuillez effectuer le test de connexion au serveur de messagerie en premier !",
                         AlertType.ERROR);
             }
         }

@@ -46,7 +46,7 @@ public class Main {
         System.out.println("FileReader.java : " + totalCode.get(totalCode.size() - 1));
         totalCode.add(122);
         System.out.println("MailSender.java : " + totalCode.get(totalCode.size() - 1));
-        totalCode.add(41);
+        totalCode.add(61);
         System.out.println("SaveManagement.java : " + totalCode.get(totalCode.size() - 1));
         totalCode.add(77);
         System.out.println("ServerBaseConfiguration.java : " + totalCode.get(totalCode.size() - 1));

@@ -421,7 +421,7 @@ public class ConfigurationController {
                 // Displays an alert if required fields for the test are incomplete
                 AlertUtilities.showAlert(this.primaryStage, "Opération impossible.",
                         "Impossible d'initier le test de connexion.",
-                        "Veuillez remplir tous les champs requis pour le test ! (marqués en rouge)",
+                        "Veuillez remplir tous les champs requis pour le test ! (en rouge)",
                         AlertType.INFORMATION);
             }
         }

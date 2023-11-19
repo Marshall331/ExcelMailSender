@@ -134,7 +134,13 @@ public class ConfigurationController {
     private TextArea txtMailContent; // TextArea for entering the email content.
 
     @FXML
-    private Button buttStart; // Button to initiate a task.
+    private Button buttReset; // Button to reset the config.
+
+    @FXML
+    private Button buttLeave; // Button to leave the application.
+
+    @FXML
+    private Button buttStart; // Button to start sending mails.
 
     // Task for sending mails
     private Task<Void> sendingTask;
@@ -392,7 +398,7 @@ public class ConfigurationController {
      * @param _disable Boolean value to enable or disable elements.
      */
     private void disableMinConfWhileTest(boolean _disable) {
-        // Disables elements during test connection
+        this.buttReset.setDisable(_disable);
         this.txtHost.setDisable(_disable);
         this.txtPort.setDisable(_disable);
         this.cbAuth.setDisable(_disable);
@@ -480,8 +486,8 @@ public class ConfigurationController {
      */
     @FXML
     private void doReset() {
-        if (AlertUtilities.confirmYesCancel(this.primaryStage, "Reset?",
-                "Do you really want to reset the configuration?", null, AlertType.CONFIRMATION)) {
+        if (AlertUtilities.confirmYesCancel(this.primaryStage, "Réinitialiser ?",
+                "Voulez-vous vraiment réinitialiser la configuration ?", null, AlertType.CONFIRMATION)) {
             this.newConfiguration = new ConfigurationSave();
             this.confView = new Configuration();
             this.confView.start(this.primaryStage);
@@ -685,7 +691,6 @@ public class ConfigurationController {
                 try {
                     newConfiguration.serverConf.port = Integer.valueOf(newValue);
                 } catch (Exception e) {
-                    System.out.println("test");
                     newConfiguration.serverConf.port = 0;
                     portIsFilled.setValue(false);
                     Style.setUndefinedTextAreaStyle(txtPort);

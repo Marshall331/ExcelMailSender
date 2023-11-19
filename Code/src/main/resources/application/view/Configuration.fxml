@@ -162,7 +162,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="80.0" prefHeight="130.0" prefWidth="1200.0" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                <children>
-                  <Button layoutX="619.0" layoutY="20.0" maxHeight="50.0" maxWidth="220.0" minHeight="50.0" minWidth="220.0" mnemonicParsing="false" onAction="#doReset" prefHeight="50.0" prefWidth="220.0" stylesheets="@../application.css" text="Réinitialiser">
+                  <Button fx:id="buttReset" layoutX="619.0" layoutY="20.0" maxHeight="50.0" maxWidth="220.0" minHeight="50.0" minWidth="220.0" mnemonicParsing="false" onAction="#doReset" prefHeight="50.0" prefWidth="220.0" stylesheets="@../application.css" text="Réinitialiser">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
@@ -175,7 +175,7 @@
                         <String fx:value="mainButtonOnClick" />
                      </styleClass>
                   </Button>
-                  <Button maxHeight="50.0" maxWidth="130.0" minHeight="50.0" minWidth="130.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="50.0" prefWidth="130.0" stylesheets="@../application.css" text="Quitter">
+                  <Button fx:id="buttLeave" maxHeight="50.0" maxWidth="130.0" minHeight="50.0" minWidth="130.0" mnemonicParsing="false" onAction="#doLeave" prefHeight="50.0" prefWidth="130.0" stylesheets="@../application.css" text="Quitter">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>

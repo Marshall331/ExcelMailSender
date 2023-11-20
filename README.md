@@ -15,7 +15,7 @@
 - [Contacts](#contacts)
 
 ## Description de l'application
-
+t
 ### But
 Cette application JavaFX a été développée dans le but de simplifier et automatiser le processus d'envoi de mails à une liste de destinataires extraite d'un fichier CSV Excel.
 

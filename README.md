@@ -15,7 +15,7 @@
 - [Contacts](#contacts)
 
 ## Description de l'application
-t
+
 ### But
 Cette application JavaFX a été développée dans le but de simplifier et automatiser le processus d'envoi de mails à une liste de destinataires extraite d'un fichier CSV Excel.
 
@@ -45,29 +45,3 @@ Pour installer et exécuter l'application, suivez simplement ces étapes :
         - java -jar excelmailsender.jar
 
 Utilisation de l'Application : Une fois l'application lancée, suivez les instructions à l'écran pour importer le fichier CSV, rédiger le mail, configurer le serveur SMTP et envoyer les mails aux destinataires.
-
-## Utilisation
-
-### Démarrage rapide
-
-Offrez un guide rapide pour utiliser votre application.
-
-### Exemples
-
-Donnez des exemples d'utilisation ou des commandes courantes pour démontrer son fonctionnement.
-
-## Documentation
-
-Lien vers la documentation détaillée si elle est séparée du README.
-
-## Auteurs
-
-Mentionnez les contributeurs principaux et leurs rôles.
-
-## Licence
-
-Spécifiez la licence du projet pour informer les utilisateurs de leurs droits et responsabilités.
-
-## Contacts
-
-Fournissez des informations pour contacter les mainteneurs du projet pour des questions, des bugs ou des suggestions.

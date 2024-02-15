@@ -6,13 +6,7 @@
 - [Installation](#installation)
     - [Prérequis](#prérequis)
     - [Instructions d'installation](#instructions-dinstallation)
-- [Utilisation](#utilisation)
-    - [Démarrage rapide](#démarrage-rapide)
-    - [Exemples](#exemples)
-- [Documentation](#documentation)
-- [Auteurs](#auteurs)
-- [Licence](#licence)
-- [Contacts](#contacts)
+
 
 ## Description de l'application
 
